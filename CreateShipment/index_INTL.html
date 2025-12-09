@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create Shipment – Web Service Test Tool</title>
+
+    <!-- Optional existing stylesheet -->
+    <link rel="stylesheet" type="text/css" href="../main.css" />
+
+    <!-- jQuery kept for legacy inline scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #050814;
+            --bg-card: #0f172a;
+            --bg-cred: #020617;
+            --border-subtle: #1e293b;
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.12);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #f97373;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+            color: var(--text-main);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .app-root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header-bar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .app-header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .app-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .app-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .app-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge-env {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            align-self: flex-start;
+        }
+
+        .cred-strip {
+            width: 100%;
+            background: var(--bg-cred);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .cred-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .cred-field-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cred-label {
+            color: var(--text-muted);
+        }
+
+        .cred-input {
+            background: #020617;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            padding: 5px 8px;
+            min-width: 170px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .cred-input:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        .cred-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .cred-status {
+            font-size: 0.8rem;
+            color: #4ade80;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .cred-status.visible {
+            opacity: 1;
+        }
+
+        .app-main {
+            flex: 1;
+        }
+
+        .app-main-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 20px 32px;
+        }
+
+        .banner-note {
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px dashed var(--border-subtle);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .banner-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--danger);
+            box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2);
+        }
+
+        .layout-main-card {
+            margin-top: 12px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            padding: 16px 16px 18px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.5);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        .card-body {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+        }
+
+        .legacy-form {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+            overflow-x: auto;
+        }
+
+        @media (max-width: 640px) {
+            .app-header-inner {
+                padding: 12px 14px 8px;
+            }
+            .cred-inner {
+                padding: 8px 14px;
+            }
+            .app-main-inner {
+                padding: 14px 14px 26px;
+            }
+        }
+    
+        /* Legacy tabs restyled with vanilla JS */
+        #tabs {
+            margin-top: 12px;
+        }
+        #tabs > ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        #tabs > ul li {
+            margin: 0;
+        }
+        #tabs > ul li a {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px 999px 0 0;
+            border: 1px solid transparent;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            background: transparent;
+            text-decoration: none;
+        }
+        #tabs > ul li a.active {
+            color: var(--accent);
+            border-color: var(--border-subtle);
+            border-bottom-color: var(--bg-card);
+            background: rgba(15, 23, 42, 0.95);
+        }
+        #tabs-1,
+        #tabs-2,
+        #tabs-3 {
+            /* JS will override display on active tab */
+        }
+
+        .tab-description {
+            margin-bottom: 14px;
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+        }
+        .tab-description h2 {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .tab-description p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .tab-description hr {
+            margin-top: 10px;
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+
+        .required-star {
+            color: #f97373;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+        .pickup-block {
+            margin-top: 6px;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+        }
+        .pickup-label-row {
+            margin-bottom: 6px;
+        }
+        .pickup-label {
+            font-size: 0.86rem;
+            font-weight: 500;
+        }
+        .pickup-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin-bottom: 6px;
+        }
+        .pickup-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .pickup-option input[type="radio"] {
+            accent-color: var(--accent);
+        }
+        .pickup-hint {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 52rem;
+        }
+        .pickup-section {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-subtle);
+        }
+        .pickup-section--hidden {
+            display: none;
+        }
+        .pickup-section p {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+
+        /* Form layout refinements */
+        .legacy-form {
+            font-size: 0.86rem;
+        }
+
+        table.TableStyle {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        table.TableStyle td {
+            padding: 4px 6px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.6);
+        }
+
+        table.TableStyle tr:last-child td {
+            border-bottom: none;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        select,
+        textarea {
+            background: #020617;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            padding: 5px 7px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* Buttons */
+        input[type="submit"],
+        button {
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 16px;
+            font-size: 0.86rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.04s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background: rgba(56, 189, 248, 0.22);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+        }
+
+        input[type="submit"]:active,
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .pickup-block h2 {
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .pickup-block + .pickup-block {
+            margin-top: 12px;
+        }
+
+        /* Align footer buttons */
+        .form-footer-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+</style>
+
+    <script>
+        // Simple helper to share credentials across pages if needed
+        window.getApiCredentials = function () {
+            return {
+                username: sessionStorage.getItem("apiUsername") || "",
+                password: sessionStorage.getItem("apiPassword") || ""
+            };
+        };
+
+        
+document.addEventListener("DOMContentLoaded", function () {
+            const userInput = document.getElementById("apiUsername");
+            const passInput = document.getElementById("apiPassword");
+            const saveBtn = document.getElementById("saveApiCredentials");
+            const statusSpan = document.getElementById("apiSaveStatus");
+
+            if (userInput && passInput && saveBtn && statusSpan) {
+                userInput.value = sessionStorage.getItem("apiUsername") || "";
+                passInput.value = sessionStorage.getItem("apiPassword") || "";
+
+                saveBtn.addEventListener("click", function () {
+                    const u = userInput.value;
+                    const p = passInput.value;
+
+                    sessionStorage.setItem("apiUsername", u);
+                    sessionStorage.setItem("apiPassword", p);
+
+                    statusSpan.textContent = "Credentials saved in this browser session.";
+                    statusSpan.classList.add("visible");
+
+                    setTimeout(() => {
+                        statusSpan.classList.remove("visible");
+                    }, 2500);
+                });
+            }
+
+            // Simple vanilla JS tabs for Canada / USA / International
+            const tabsRoot = document.getElementById("tabs");
+            if (tabsRoot) {
+                const tabLinks = tabsRoot.querySelectorAll("ul li a[href^='#tabs-']");
+                const panels = [];
+
+                tabLinks.forEach(link => {
+                    const targetId = link.getAttribute("href").slice(1);
+                    const panel = document.getElementById(targetId);
+                    if (panel) {
+                        panels.push(panel);
+                    }
+                });
+
+                function activateTab(targetId) {
+                    tabLinks.forEach(link => {
+                        const id = link.getAttribute("href").slice(1);
+                        if (id === targetId) {
+                            link.classList.add("active");
+                        } else {
+                            link.classList.remove("active");
+                        }
+                    });
+
+                    panels.forEach(panel => {
+                        if (panel.id === targetId) {
+                            panel.style.display = "";
+                        } else {
+                            panel.style.display = "none";
+                        }
+                    });
+                }
+
+                tabLinks.forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const targetId = link.getAttribute("href").slice(1);
+                        activateTab(targetId);
+                    });
+                });
+
+                if (tabLinks.length > 0) {
+                    const firstId = tabLinks[0].getAttribute("href").slice(1);
+                    activateTab(firstId);
+                }
+            }
+      
+
+            // Pickup vs Deposit toggle for Canada / USA / International
+            function wirePickupToggle(config) {
+                const {
+                    radioSelector,
+                    shippingSectionId,
+                    depositSectionId,
+                    groupIdFieldId
+                } = config;
+
+                const radios = document.querySelectorAll(radioSelector);
+                const shippingSection = document.getElementById(shippingSectionId);
+                const depositSection = document.getElementById(depositSectionId);
+                const groupField = document.getElementById(groupIdFieldId);
+
+                if (!radios || radios.length === 0 || !shippingSection || !depositSection || !groupField) {
+                    return;
+                }
+
+                function apply(value) {
+                    if (value === "yes") {
+                        shippingSection.classList.remove("pickup-section--hidden");
+                        depositSection.style.display = "none";
+                        groupField.value = "PICKUP";
+                    } else if (value === "no") {
+                        shippingSection.classList.add("pickup-section--hidden");
+                        depositSection.style.display = "";
+                        groupField.value = "DEPOSIT";
+                    }
+                }
+
+                let initial = null;
+                radios.forEach(radio => {
+                    if (radio.checked) {
+                        initial = radio.value;
+                    }
+                    radio.addEventListener("change", () => {
+                        apply(radio.value);
+                    });
+                });
+
+                if (initial) {
+                    apply(initial);
+                } else {
+                    // Default to 'no' (deposit) if nothing is selected
+                    apply("no");
+                    radios.forEach(radio => {
+                        if (radio.value === "no") {
+                            radio.checked = true;
+                        }
+                    });
+                }
+            }
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestion']",
+                shippingSectionId: "shippingpointsection",
+                depositSectionId: "pickupsection",
+                groupIdFieldId: "groupId"
+            });
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestionUSA']",
+                shippingSectionId: "shippingpointsectionUSA",
+                depositSectionId: "pickupsectionUSA",
+                groupIdFieldId: "groupIdUSA"
+            });
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestionIntl']",
+                shippingSectionId: "shippingpointsectionIntl",
+                depositSectionId: "pickupsectionIntl",
+                groupIdFieldId: "groupIdIntl"
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+
+
+
+<div class="app-root">
+
+    <header class="app-header-bar">
+        <div class="app-header-inner">
+            <div class="app-title-block">
+                <div class="app-title">Create Shipment</div>
+                <div class="app-subtitle">Canada / USA / International &mdash; Web service test harness</div>
+            </div>
+            <div class="badge-env">Static prototype &middot; Legacy form preserved</div>
+        </div>
+
+        <div class="cred-strip">
+            <div class="cred-inner">
+                <div class="cred-field-group">
+                    <span class="cred-label">API Username</span>
+                    <input type="text" id="apiUsername" class="cred-input" autocomplete="off" />
+                </div>
+                <div class="cred-field-group">
+                    <span class="cred-label">API Password</span>
+                    <input type="password" id="apiPassword" class="cred-input" autocomplete="off" />
+                </div>
+                <div class="cred-actions">
+                    <button id="saveApiCredentials" class="btn-primary">Save for this session</button>
+                    <span id="apiSaveStatus" class="cred-status"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="app-main-inner">
+            <div id="tabs">
+                <ul>
+                    <li><a href="index_CAN.html">🇨🇦 Canada</a></li>
+                    <li><a href="index_USA.html">🇺🇸 USA</a></li>
+                    <li><a href="index_INTL.html" class="active">🌍 International</a></li>
+                </ul>
+            </div>
+
+
+            <div class="banner-note">
+                <span class="banner-dot"></span>
+                <span>
+                    This page is an early refactor: modern shell UI with the original Create Shipment form embedded below.
+                    Form structure and field names are kept intact for now.
+                </span>
+            </div>
+
+            <div class="layout-main-card">
+                <section class="card">
+                    <div class="card-header">
+                        <div class="card-title">Legacy Create Shipment Form</div>
+                        <div class="card-tag">Canada · USA · International</div>
+                    </div>
+                    <div class="card-body">
+                        Use this form to exercise existing shipment creation flows. In later iterations, we can break this
+                        into smaller guided steps and add inline documentation, sample payloads, and API call previews.
+                    </div>
+                    <div class="legacy-form">
+
+<script>
+      <!-- this will generaterandom number and date stamp for customer request element -->
+        
+        window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+}
+    </script>
+    
+  <!--this will generaterandom number and date stamp for customer request element-->
+  <script>
+        function formatDate(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + '' + ampm;
+  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "_" + strTime;
+}
+
+var d = new Date();
+var e = formatDate(d);
+        
+        function randomnum() {
+  var min = 1;
+  var max = 9999999999;
+  var num = Math.floor(Math.random() * (max - min + 1)) + min;
+  var value = num + '_' + e;
+  ['custreq', 'custreqUSA', 'custreqIntl'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.value = value;
+    }
+  });
+}
+window.onload = randomnum;
+
+    </script>
+
+ <!-- This section is to display the pricing div when selecting no for having a manifest -->
+    <script>
+                                $(document).ready(function(){
+    $('#manifestquestion').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdiv").show();
+        $("#GroupIdSection").hide();
+      }
+      else
+      {
+        $("#pricingdiv").hide();
+        $("#GroupIdSection").show();
+      }
+    });
+});
+
+                                $(document).ready(function(){
+    $('#manifestquestionUSA').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdivUSA").show();
+        $("#GroupIdSectionUSA").hide();
+      }
+      else
+      {
+        $("#pricingdivUSA").hide();
+        $("#GroupIdSectionUSA").show();
+      }
+    });
+});
+
+                                $(document).ready(function(){
+    $('#manifestquestionIntl').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdivIntl").show();
+        $("#GroupIdSectionIntl").hide();
+      }
+      else
+      {
+        $("#pricingdivIntl").hide();
+        $("#GroupIdSectionIntl").show();
+      }
+    });
+});
+
+</script>
+
+<script>
+    
+        $(function() {
+        enable_cbPA21();
+        $("#optionPA21").click(enable_cbPA21);
+    });
+    function enable_cbPA21() {
+        if (this.checked) { 
+            $("input.optionDNS").prop("disabled", true);  
+            $("input.optionPA19").prop("disabled", true);
+            $("input.optionPA18").prop("disabled", true);
+            $("input.optionLAD").prop("disabled", true);
+            $("input.optionSO").prop("checked", true);
+            //$("input.optionSO").attr("disabled", true);
+        }
+        else{
+            $("input.optionDNS").prop("disabled", false);  
+            $("input.optionPA19").prop("disabled", false);   
+            $("input.optionPA18").prop("disabled", false);
+            $("input.optionLAD").prop("disabled", false);
+            $("input.optionSO").prop("checked", false);
+            //$("input.optionSO").prop("disabled", false);
+        }
+    }
+    
+</script>
+
+  <div id="tabs-3"><div class="tab-description"><h2>🌍 International Shipping</h2><p>Prepare international shipments with customs declarations, service options, and destination requirements.</p><hr></div>
+    <form id="CreateShipmentIntl" action="CreateShipmentIntl.php" method="POST">
+      <div class="pickup-block" style="margin-top:20px;">
+        <h2 style="margin-top:0;">Customer Request ID</h2>
+        <p>This is a unique request id for tracking purpuses.</p>
+      <br />
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <label for="labelcustreqIntl">customer request ID</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="custreqIntl" id="custreqIntl" readOnly="true" maxlength="30" />
+          </td>
+        </tr>
+      </table>
+        <br />
+      </div>
+
+      <p>If your shipments are picked up by Canada Post or a third party, select <strong>Yes</strong>. If you are going to deposit at a post office, select <strong>No</strong>.</p>
+
+      <div class="pickup-block">
+        <div class="pickup-label-row">
+          <span class="pickup-label">Pickup?<span class="required-star"> *</span></span>
+        </div>
+        <div class="pickup-options">
+          <label class="pickup-option" for="pickupquestionIntl-yes">
+            <input
+              class="pickupyesIntl"
+              type="radio"
+              id="pickupquestionIntl-yes"
+              name="pickupquestionIntl"
+              value="yes"
+            />
+            <span>Yes – schedule a pickup</span>
+          </label>
+          <label class="pickup-option" for="pickupquestionIntl-no">
+            <input
+              class="pickupnoIntl"
+              type="radio"
+              id="pickupquestionIntl-no"
+              name="pickupquestionIntl"
+              value="no"
+            />
+            <span>No – I will deposit at a post office</span>
+          </label>
+        </div>
+        <p class="pickup-hint">
+          Your choice determines whether the shipment is grouped as <code>PICKUP</code> or <code>DEPOSIT</code>
+          in the <strong>Group ID</strong> field below and which additional details are required.
+        </p>
+      </div>
+
+      <div id="shippingpointsectionIntl" class="pickup-section pickup-section--hidden">
+        <p>You chose pickup, so you must provide the postal code of your pickup location.</p>
+        <table class="TableSTyle">
+          <tr>
+            <td>
+              <label for="shippingPointIntl" class="control-label">
+                Shipping Point<span class="required-star"> *</span>
+              </label>
+              <input
+                type="text"
+                name="shippingPointIntl"
+                id="shippingPointIntl"
+                maxlength="6"
+                value="K2K0B1"
+                onblur="UpperCasePostalContractShippingIntl()"
+              />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="pickupsectionIntl" class="pickup-section">
+        <p>
+          It looks like you’re going to deposit instead of using a pickup. Please identify the deposit location
+          by providing the <strong>Post Office ID</strong> below. If you’re not sure what that is, use the link
+          to find a deposit location and copy/paste the Post Office ID into the field.
+        </p>
+        <table class="TableStyle">
+          <tr>
+            <td>
+              Click here to
+              <a
+                href="https://www.canadapost-postescanada.ca/information/app/fdl/business/findDepositLocation?execution=e1s1"
+                target="_blank"
+              >
+                Find a Deposit Location
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="postofficeidIntl" class="control-label">
+                Post Office ID<span class="required-star"> *</span>
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="text"
+                name="postofficeidIntl"
+                id="postofficeidIntl"
+                value="3057"
+                maxlength="10"
+              />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br /><br />
+
+<script>
+    // Toggle dimensions section for International when user selects Yes/No
+    $(document).ready(function () {
+        function updateDimensionIntlVisibility() {
+            var val = $("input[name='dimensionIntl']:checked").val();
+            if (val === 'yes') {
+                $("#dimensionIntl").show();
+            } else {
+                $("#dimensionIntl").hide();
+            }
+        }
+
+        $("input[name='dimensionIntl']").on('change', updateDimensionIntlVisibility);
+        // Apply initial state on load
+        updateDimensionIntlVisibility();
+    });
+</script>
+
+<!-- display div if Agreement is set in session otherwise hide it. -->
+
+<div id="agreement" class="pickup-block" style="margin-top:20px;">
+
+    <h2 style="margin-top:0;">Manifest &amp; Grouping</h2>
+    <P>If you are planning on shipping over 50 shipments per day then you should opt to include in Manifest. Failure to comply may result in having your shipments refused by Canada Post. Canada Post requires a manifest for every pickup over 50 shipments, the manifest must be given to the Canada Post representative. If you are not familiar with the Manifest please have a look at our handy <a href="http://www.fabsandbox.com/tutorials">video tutorials section.</a>
+  </P>
+  <table class="TableStyle">
+    <tr>
+      <td>
+                                Include Shipment in Manifest? <font color="red">
+        <b> * </b>
+      </font>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <label for="manifestquestionIntl">
+    <select name="manifestquestionIntl" id="manifestquestionIntl">
+      <option disabled selected value> -- select an option -- </option>
+      <option value="yes" label="YES">YES</option>
+      <option value="no" label="NO"> NO</option>
+    </select>
+        </td>
+      </tr>
+    </table>
+    <div id="GroupIdSectionIntl" style="display:none">
+      <p> Its important to understand that if you opted to include shipments to a manifest and transmit at a later time that you will require printing also and provide hardcopy. This field is disabled and will be autopopulated when you select Pickup or Deposit.</p>
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <label for="groupIdIntl">Group ID<font color="red">
+              <b> * </b>
+            </font>
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" class="groupIdIntl" name="groupIdIntl" id="groupIdIntl" maxlength="32" readOnly="true" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+</div>
+
+<div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Promo Code</h2>
+  <p>Promotional discount code. Note that a promotion code is only valid for a certain period and product. Your entry will be converted to uppercase (i.e, you can use lowercase or a mix of lower or upper case and will get the same result).</p>
+  <table class="TableStyle">
+    <tr>
+      <td>
+        <label for="promocodeIntl">Promo Code
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="text" class="promocodeIntl" name="promocodeIntl" id="promocodeIntl" maxlength="32" />
+    </td>
+  </tr>
+</table>
+<br />
+</div>
+<br />
+
+<!-- here -->
+<div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">QR Code &amp; Public Key</h2>
+  <p>
+    This is an optional element, used to request the QR code image of the public label in base64 format,
+    along with the public key label URL and expiry date. If set to <strong>Yes</strong>, two new links are
+    provided in the response: <code>publicLabel</code> and <code>publicKeyInfo</code>.
+    <br />
+    <strong>Note:</strong> Only applicable to 8 1/2 x 11 paper encoded in PDF.
+  </p>
+
+  <table class="TableStyle">
+    <tr>
+      <td>
+        <label for="QrCodeIntl" class="pickup-label">Do you want to generate a QR Code?</label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <select name="QrCodeIntl" id="QrCodeIntl">
+          <option value="false" label="No">No</option>
+          <option value="true" label="Yes">Yes</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+
+  <div id="publickeyIntlContainer" style="display:none; margin-top:12px;">
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="publickeyIntl" class="pickup-label">Do you want to receive a public key label URL?</label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <select name="publickeyIntl" id="publickeyIntl">
+            <option value="false" label="No">No</option>
+            <option value="true" label="Yes">Yes</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      function updatePublicKeyVisibility_QrCodeIntl() {
+        var val = $('#QrCodeIntl').val();
+        if (val === 'true') {
+          $("#publickeyIntlContainer").show();
+        } else {
+          $("#publickeyIntlContainer").hide();
+        }
+      }
+
+      $('#QrCodeIntl').on('change', updatePublicKeyVisibility_QrCodeIntl);
+      // Apply initial state on load (default is No, so container stays hidden)
+      updatePublicKeyVisibility_QrCodeIntl();
+    });
+  </script>
+</div>
+
+<br />
+<!-- here -->
+
+</div>
+<br />
+
+  <div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Payment Information</h2>
+
+  <table class="TableStyle">
+    <tr>
+      <td>
+        <label for="mailedByIntl"> Mailed By <font color="red">
+          <b> * </b>
+        </font>
+      </label>
+    </td>
+    <td>
+      <label for="mailedOnBehalfOfIntl">Mailed on Behalf of <font color="red">
+        <b> * </b>
+      </font>
+    </label>
+  </td>
+  <td>
+    <label for="paidByIntl">Paid By <font color="red">
+      <b> * </b>
+    </font>
+  </label>
+</td>
+<td>
+  <label for="agreementIntl">Contract<font color="red">
+    <b> * </b>
+  </font>
+</label>
+</td>
+<td>
+  <label for="methodOfPaymentIntl">Method of Payment<font color="red">
+    <b> * </b>
+  </font>
+</label>
+</td>
+</tr>
+<tr>
+  <td>
+  <input type="text" name="mailedByIntl" id="label-mailedByIntl" value="" maxlength="10" readOnly="true"/>
+</td>
+  <td>
+  <input type="text" name="mailedOnBehalfOfIntl" id="label-mailedOnBehalfOfIntl" value="" maxlength="10" readOnly="true"/>
+</td>
+  <td>
+  <input type="text" name="paidbycustomerIntl" id="label-paidbycustomerIntl" value="" maxlength="10" readOnly="true"/>
+</td>
+  <td>
+  <input type="text" name="agreementIntl" id="label-agreementIntl" value="" maxlength="10" readOnly="true"/>
+</td>
+<td>
+    <!-- script to popup the want a receipt whem credit card is picked-->
+    <script>
+                                $(document).ready(function(){
+    $('#methodOfPaymentIntl').on('change', function() {
+      if ( this.value == 'CreditCard')
+      {
+        $("#GetReceiptIntl").show();
+      }
+      else
+      {
+        $("#GetReceiptIntl").hide();
+      }
+    });
+});
+</script>
+
+    <select name="methodOfPaymentIntl" id="methodOfPaymentIntl">
+      <option value="CreditCard" label="CreditCard">creditCard</option>
+      <option selected value="Account" label="Account">Account</option>
+      <option value="SupplierAccount" label="SupplierAccount">Supplier Account</option>
+    </select>
+  </td>
+</tr>
+</table>
+<br />
+
+<div style="display: flex; justify-content: space-around float: right">
+  <div id='pricingdivIntl' style='display:none'>
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="GetPricingIntl">Do you want pricing returned in the answer?</label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            <select name="GetPricingIntl" id="GetPricingIntl">
+              <option value="false" label="No">No</option>
+              <option value="true" label="Yes">Yes</option>
+            </select>
+          </center>
+        </td>
+      </tr>
+    </table>
+<br />
+<br />
+<br />
+  </div>
+
+ <div style='display:none;' id='GetReceiptIntl' float: right>
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="receipt">Do you Want a Receipt?</label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <center>
+            <select name="GetReceiptIntl" id="GetReceiptIntl">
+              <option value="false" label="No">No</option>
+              <option value="true" label="Yes">Yes</option>
+            </select>
+          </center>
+        </td>
+      </tr>
+    </table>
+<br />
+<br />
+<br />
+  </div>
+</div>
+</div>
+
+  <br />
+  <div class="pickup-block" style="margin-top:20px;">
+    <h2 style="margin-top:0;">Continuous Inbound Freight</h2>
+    <p>
+      If you have shipments that originate outside of Canada, but are being delivered directly to a Canada Post plant,
+      use this element to identify these shipments as <strong>continuous inbound freight (CIF)</strong>. This option
+      allows you to be eligible for Canadian sales tax exemptions. You will need to provide Canada Post with documentation
+      that shows proof of origin, such as a Canadian customs document or bill of lading.
+    </p>
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="CIFIntl" class="pickup-label">Mark this shipment as continuous inbound freight (CIF)?</label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <select name="CIFIntl" id="CIFIntl">
+            <option value="false" label="No">No</option>
+            <option value="true" label="Yes">Yes</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+
+<br /><br />
+<div class="pickup-block" style="margin-top:20px;">
+  <br />
+  <h2 style="margin-top:0;">Expected Mailing Date</h2>
+  <p>shipments are priced as per the current shipment date and are re-priced at time of transmit if transmitted at a later date.</p>
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label>Expected Mailing Date: </label>
+        <input id="datepicker3" type="text" name="mailingdateIntl" />
+        <br /><br />
+      </td>
+    </tr>
+  </table>
+  <br />
+</div>
+<br /><br /><br />
+  <div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Sender Information</h2>
+  <br />
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="senderCompanyIntl" id="senderCompanyIntl">Company <font color="red">
+          <b> * </b>
+        </font>
+      </label>
+    </td>
+    <td>
+      <label for="senderphoneIntl" id="senderphoneIntl">Contact Phone <font color="red">
+        <b> * </b>
+      </font>
+    </label>
+  </td>
+  <td>
+    <label for="contactNameIntl" id="contactNameIntl">Contact Name</label>
+  </td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="senderCompanyIntl" id="senderCompanyIntl" value="company" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="senderphoneIntl" id="senderphoneIntl" value="1234567890" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="contactNameIntl" id="contactNameIntl" maxlength="44" />
+  </td>
+</tr>
+</table>
+<br /><br />
+<table class="TableStyle">
+  <tr>
+    <td>
+      <label for="customerAddressLine1Intl">Address (Line 1)<font color="red">
+        <b> * </b>
+      </font>
+    </label>
+  </td>
+  <td>
+                                Address (Line 2)
+                            </td>
+  <td>
+    <label for="customerCityIntl">City<font color="red">
+      <b> * </b>
+    </font>
+  </label>
+</td>
+<td>
+  <label for="provstateIntl">Province<font color="red">
+    <b> * </b>
+  </font>
+</label>
+</td>
+<td>
+  <label for="customerPostalCodeIntl">Postal Code<font color="red">
+    <b> * </b>
+  </font>
+</label>
+</td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="customerAddressLine1Intl" id="customerAddressLine1Intl" value="123 test" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="customerAddressLine2Intl" id="customerAddressLine2Intl" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="customerCityIntl" id="customerCityIntl" value="city" maxlength="40" />
+  </td>
+  <td>
+    <select name="senderProvinceIntl" id="senderProvinceIntl">
+      <option value="" label=" -- Choose One --"> -- Choose One --</option>
+      <option value="AB" label="Alberta">Alberta</option>
+      <option value="BC" label="British Columbia">British Columbia</option>
+      <option value="MB" label="Manitoba">Manitoba</option>
+      <option value="NB" label="New Brunswick">New Brunswick</option>
+      <option value="NL" label="Newfoundland and Labrador">Newfoundland and Labrador</option>
+      <option value="NS" label="Nova Scotia">Nova Scotia</option>
+      <option value="NT" label="Northwest Territories">Northwest Territories</option>
+      <option value="NU" label="Nunavut">Nunavut</option>
+      <option value="ON" label="Ontario" selected >Ontario</option>
+      <option value="PE" label="Prince Edward Island">Prince Edward Island</option>
+      <option value="QC" label="Québec">Québec</option>
+      <option value="SK" label="Saskatchewan">Saskatchewan</option>
+      <option value="YT" label="Yukon">Yukon</option>
+    </select>
+  </td>
+  <td>
+    <input type="text" name="customerPostalCodeIntl" id="customerPostalCodeIntl" value="K2K0B1" maxlength="6" onblur="UpperCasePostalContractShippingIntl()" />
+  </td>
+</tr>
+</table>
+<br />
+</div>
+<br />
+  <div class="pickup-block" style="margin-top:20px;">
+  <br />
+  <h2 style="margin-top:0;">Recipient Information</h2>
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="recipientCompanyIntl" id="recipientCompanyIntl">Company</label>
+      </td>
+      <td>
+        <label for="recipientNameIntl" id="recipientNameIntl">Name</label>
+      </td>
+      <td>
+        <label for="additionalAddressInfoIntl" id="additionalAddressInfoIntl">Additional Address Info</label>
+      </td>
+      <td>
+        <label for="recipientphoneIntl" id="recipientphoneIntl">Contact Phone </label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="recipientCompanyIntl" id="recipientCompanyIntl" value="company" maxlength="44" />
+      </td>
+      <td>
+        <input type="text" name="recipientNameIntl" id="recipientNameIntl" value="recipientname" maxlength="44" />
+      </td>
+      <td>
+        <input type="text" name="additionalAddressInfoIntl" id="additionalAddressInfoIntl" value="addinfo" maxlength="44" />
+      </td>
+      <td>
+        <input type="text" name="recipientphoneIntl" id="recipientphoneIntl" value="1111112212" maxlength="44" />
+      </td>
+    </tr>
+  </table>
+  <br />
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="recipientAddressLine1Intl" id="recipientAddressLine1Intl">Address (Line 1) <span>*</span>
+      </label>
+    </td>
+    <td>
+      <label for="recipientAddressLine2Intl" id="recipientAddressLine2Intl">Address (Line 2)</label>
+    </td>
+    <td>
+      <label for="recipientCityIntl" id="recipientCityIntl">City <span>*</span>
+    </label>
+  </td>
+  <td>
+    <label for="recipientStateIntl" id="recipientStateIntl">prov/state <span>*</span>
+  </label>
+</td>
+</tr>
+<td>
+  <input type="text" name="recipientAddressLine1Intl" id="recipientAddressLine1Intl" value="add1" maxlength="44" />
+</td>
+<td>
+  <input type="text" name="recipientAddressLine2Intl" id="recipientAddressLine2Intl" value="add2" maxlength="44" />
+</td>
+<td>
+  <input type="text" name="recipientCityIntl" id="recipientCityIntl" value="city" maxlength="44" />
+</td>
+<td>
+  <input type="text" name="recipientStateIntl" id="recipientStateIntl" value="provstateIntl" maxlength="44" />
+</td>
+</tr>
+</table>
+<br />
+<table class="TableSTyle">
+  <tr>
+    <td>
+      <label for="zipIntl" id="zipIntl">postcode<span>*</span>
+    </label>
+  </td>
+  <td>
+    <label for="recipientCountrytIntl" id="label-recipientCountrytIntl">Recipient Country</label>
+  </td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="zipIntl" value="90210"id="zipIntl" />
+  </td>
+  <td>
+    <select name="recipientCountrytIntl" id="recipientCountrytIntl">
+      <option value="" label=" -- Choose One --"> -- Choose One --</option>
+      <option value="AF" label="Afghanistan">Afghanistan</option>
+      <option value="AX" label="Åland Islands">Åland Islands</option>
+      <option value="AL" label="Albania">Albania</option>
+      <option value="DZ" label="Algeria">Algeria</option>
+      <option value="AS" label="American Samoa">American Samoa</option>
+      <option value="AD" label="Andorra" selected="selected">Andorra</option>
+      <option value="AO" label="Angola">Angola</option>
+      <option value="AI" label="Anguilla">Anguilla</option>
+      <option value="AQ" label="Antarctica">Antarctica</option>
+      <option value="AG" label="Antigua and Barbuda">Antigua and Barbuda</option>
+      <option value="AR" label="Argentina">Argentina</option>
+      <option value="AM" label="Armenia">Armenia</option>
+      <option value="AW" label="Aruba">Aruba</option>
+      <option value="AU" label="Australia">Australia</option>
+      <option value="AT" label="Austria">Austria</option>
+      <option value="AZ" label="Azerbaijan">Azerbaijan</option>
+      <option value="BS" label="Bahamas">Bahamas</option>
+      <option value="BH" label="Bahrain">Bahrain</option>
+      <option value="BD" label="Bangladesh">Bangladesh</option>
+      <option value="BB" label="Barbados">Barbados</option>
+      <option value="BY" label="Belarus">Belarus</option>
+      <option value="BE" label="Belgium">Belgium</option>
+      <option value="BZ" label="Belize">Belize</option>
+      <option value="BJ" label="Benin">Benin</option>
+      <option value="BM" label="Bermuda">Bermuda</option>
+      <option value="BT" label="Bhutan">Bhutan</option>
+      <option value="BO" label="Bolivia">Bolivia</option>
+      <option value="BA" label="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+      <option value="BW" label="Botswana">Botswana</option>
+      <option value="BV" label="Bouvet Island">Bouvet Island</option>
+      <option value="BR" label="Brazil">Brazil</option>
+      <option value="IO" label="British Indian Ocean Territory">British Indian Ocean Territory</option>
+      <option value="BN" label="Brunei Darussalam">Brunei Darussalam</option>
+      <option value="BG" label="Bulgaria">Bulgaria</option>
+      <option value="BF" label="Burkina Faso">Burkina Faso</option>
+      <option value="BI" label="Burundi">Burundi</option>
+      <option value="KH" label="Cambodia">Cambodia</option>
+      <option value="CM" label="Cameroon">Cameroon</option>
+      <option value="CA" label="Canada">Canada</option>
+      <option value="CV" label="Cape Verde">Cape Verde</option>
+      <option value="KY" label="Cayman Islands">Cayman Islands</option>
+      <option value="CF" label="Central African Republic">Central African Republic</option>
+      <option value="TD" label="Chad">Chad</option>
+      <option value="CL" label="Chile">Chile</option>
+      <option value="CN" label="China">China</option>
+      <option value="CX" label="Christmas Island">Christmas Island</option>
+      <option value="CC" label="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+      <option value="CO" label="Colombia">Colombia</option>
+      <option value="KM" label="Comoros">Comoros</option>
+      <option value="CG" label="Congo">Congo</option>
+      <option value="CD" label="Congo, The Democratic Republic of The">Congo, The Democratic Republic of The</option>
+      <option value="CK" label="Cook Islands">Cook Islands</option>
+      <option value="CR" label="Costa Rica">Costa Rica</option>
+      <option value="CI" label="Cote D'ivoire">Cote D'ivoire</option>
+      <option value="HR" label="Croatia">Croatia</option>
+      <option value="CU" label="Cuba">Cuba</option>
+      <option value="CY" label="Cyprus">Cyprus</option>
+      <option value="CZ" label="Czech Republic">Czech Republic</option>
+      <option value="DK" label="Denmark">Denmark</option>
+      <option value="DJ" label="Djibouti">Djibouti</option>
+      <option value="DM" label="Dominica">Dominica</option>
+      <option value="DO" label="Dominican Republic">Dominican Republic</option>
+      <option value="EC" label="Ecuador">Ecuador</option>
+      <option value="EG" label="Egypt">Egypt</option>
+      <option value="SV" label="El Salvador">El Salvador</option>
+      <option value="GQ" label="Equatorial Guinea">Equatorial Guinea</option>
+      <option value="ER" label="Eritrea">Eritrea</option>
+      <option value="EE" label="Estonia">Estonia</option>
+      <option value="ET" label="Ethiopia">Ethiopia</option>
+      <option value="FK" label="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+      <option value="FO" label="Faroe Islands">Faroe Islands</option>
+      <option value="FJ" label="Fiji">Fiji</option>
+      <option value="FI" label="Finland">Finland</option>
+      <option value="FR" label="France">France</option>
+      <option value="GF" label="French Guiana">French Guiana</option>
+      <option value="PF" label="French Polynesia">French Polynesia</option>
+      <option value="TF" label="French Southern Territories">French Southern Territories</option>
+      <option value="GA" label="Gabon">Gabon</option>
+      <option value="GM" label="Gambia">Gambia</option>
+      <option value="GE" label="Georgia">Georgia</option>
+      <option value="DE" label="Germany">Germany</option>
+      <option value="GH" label="Ghana">Ghana</option>
+      <option value="GI" label="Gibraltar">Gibraltar</option>
+      <option value="GR" label="Greece">Greece</option>
+      <option value="GL" label="Greenland">Greenland</option>
+      <option value="GD" label="Grenada">Grenada</option>
+      <option value="GP" label="Guadeloupe">Guadeloupe</option>
+      <option value="GU" label="Guam">Guam</option>
+      <option value="GT" label="Guatemala">Guatemala</option>
+      <option value="GG" label="Guernsey">Guernsey</option>
+      <option value="GN" label="Guinea">Guinea</option>
+      <option value="GW" label="Guinea-bissau">Guinea-bissau</option>
+      <option value="GY" label="Guyana">Guyana</option>
+      <option value="HT" label="Haiti">Haiti</option>
+      <option value="HM" label="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option>
+      <option value="VA" label="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+      <option value="HN" label="Honduras">Honduras</option>
+      <option value="HK" label="Hong Kong">Hong Kong</option>
+      <option value="HU" label="Hungary">Hungary</option>
+      <option value="IS" label="Iceland">Iceland</option>
+      <option value="IN" label="India">India</option>
+      <option value="ID" label="Indonesia">Indonesia</option>
+      <option value="IR" label="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+      <option value="IQ" label="Iraq">Iraq</option>
+      <option value="IE" label="Ireland">Ireland</option>
+      <option value="IM" label="Isle of Man">Isle of Man</option>
+      <option value="IL" label="Israel">Israel</option>
+      <option value="IT" label="Italy">Italy</option>
+      <option value="JM" label="Jamaica">Jamaica</option>
+      <option value="JP" label="Japan">Japan</option>
+      <option value="JE" label="Jersey">Jersey</option>
+      <option value="JO" label="Jordan">Jordan</option>
+      <option value="KZ" label="Kazakhstan">Kazakhstan</option>
+      <option value="KE" label="Kenya">Kenya</option>
+      <option value="KI" label="Kiribati">Kiribati</option>
+      <option value="KP" label="Korea, Democratic People\s Republic of">Korea, Democratic People\s Republic of</option>
+      <option value="KR" label="Korea, Republic of">Korea, Republic of</option>
+      <option value="KW" label="Kuwait">Kuwait</option>
+      <option value="KG" label="Kyrgyzstan">Kyrgyzstan</option>
+      <option value="LA" label="Lao People\s Democratic Republic">Lao People\s Democratic Republic</option>
+      <option value="LV" label="Latvia">Latvia</option>
+      <option value="LB" label="Lebanon">Lebanon</option>
+      <option value="LS" label="Lesotho">Lesotho</option>
+      <option value="LR" label="Liberia">Liberia</option>
+      <option value="LY" label="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+      <option value="LI" label="Liechtenstein">Liechtenstein</option>
+      <option value="LT" label="Lithuania">Lithuania</option>
+      <option value="LU" label="Luxembourg">Luxembourg</option>
+      <option value="MO" label="Macao">Macao</option>
+      <option value="MK" label="Macedonia, The Former Yugoslav Republic of">Macedonia, The Former Yugoslav Republic of</option>
+      <option value="MG" label="Madagascar">Madagascar</option>
+      <option value="MW" label="Malawi">Malawi</option>
+      <option value="MY" label="Malaysia">Malaysia</option>
+      <option value="MV" label="Maldives">Maldives</option>
+      <option value="ML" label="Mali">Mali</option>
+      <option value="MT" label="Malta">Malta</option>
+      <option value="MH" label="Marshall Islands">Marshall Islands</option>
+      <option value="MQ" label="Martinique">Martinique</option>
+      <option value="MR" label="Mauritania">Mauritania</option>
+      <option value="MU" label="Mauritius">Mauritius</option>
+      <option value="YT" label="Mayotte">Mayotte</option>
+      <option value="MX" label="Mexico">Mexico</option>
+      <option value="FM" label="Micronesia, Federated States of">Micronesia, Federated States of</option>
+      <option value="MD" label="Moldova, Republic of">Moldova, Republic of</option>
+      <option value="MC" label="Monaco">Monaco</option>
+      <option value="MN" label="Mongolia">Mongolia</option>
+      <option value="ME" label="Montenegro">Montenegro</option>
+      <option value="MS" label="Montserrat">Montserrat</option>
+      <option value="MA" label="Morocco">Morocco</option>
+      <option value="MZ" label="Mozambique">Mozambique</option>
+      <option value="MM" label="Myanmar">Myanmar</option>
+      <option value="NA" label="Namibia">Namibia</option>
+      <option value="NR" label="Nauru">Nauru</option>
+      <option value="NP" label="Nepal">Nepal</option>
+      <option value="NL" label="Netherlands">Netherlands</option>
+      <option value="AN" label="Netherlands Antilles">Netherlands Antilles</option>
+      <option value="NC" label="New Caledonia">New Caledonia</option>
+      <option value="NZ" label="New Zealand">New Zealand</option>
+      <option value="NI" label="Nicaragua">Nicaragua</option>
+      <option value="NE" label="Niger">Niger</option>
+      <option value="NG" label="Nigeria">Nigeria</option>
+      <option value="NU" label="Niue">Niue</option>
+      <option value="NF" label="Norfolk Island">Norfolk Island</option>
+      <option value="MP" label="Northern Mariana Islands">Northern Mariana Islands</option>
+      <option value="NO" label="Norway">Norway</option>
+      <option value="OM" label="Oman">Oman</option>
+      <option value="PK" label="Pakistan">Pakistan</option>
+      <option value="PW" label="Palau">Palau</option>
+      <option value="PS" label="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+      <option value="PA" label="Panama">Panama</option>
+      <option value="PG" label="Papua New Guinea">Papua New Guinea</option>
+      <option value="PY" label="Paraguay">Paraguay</option>
+      <option value="PE" label="Peru">Peru</option>
+      <option value="PH" label="Philippines">Philippines</option>
+      <option value="PN" label="Pitcairn">Pitcairn</option>
+      <option value="PL" label="Poland">Poland</option>
+      <option value="PT" label="Portugal">Portugal</option>
+      <option value="PR" label="Puerto Rico">Puerto Rico</option>
+      <option value="QA" label="Qatar">Qatar</option>
+      <option value="RE" label="Reunion">Reunion</option>
+      <option value="RO" label="Romania">Romania</option>
+      <option value="RU" label="Russian Federation">Russian Federation</option>
+      <option value="RW" label="Rwanda">Rwanda</option>
+      <option value="SH" label="Saint Helena">Saint Helena</option>
+      <option value="KN" label="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+      <option value="LC" label="Saint Lucia">Saint Lucia</option>
+      <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+      <option value="VC" label="Saint Vincent and The Grenadines">Saint Vincent and The Grenadines</option>
+      <option value="WS" label="Samoa">Samoa</option>
+      <option value="SM" label="San Marino">San Marino</option>
+      <option value="ST" label="Sao Tome and Principe">Sao Tome and Principe</option>
+      <option value="SA" label="Saudi Arabia">Saudi Arabia</option>
+      <option value="SN" label="Senegal">Senegal</option>
+      <option value="RS" label="Serbia">Serbia</option>
+      <option value="SC" label="Seychelles">Seychelles</option>
+      <option value="SL" label="Sierra Leone">Sierra Leone</option>
+      <option value="SG" label="Singapore">Singapore</option>
+      <option value="SK" label="Slovakia">Slovakia</option>
+      <option value="SI" label="Slovenia">Slovenia</option>
+      <option value="SB" label="Solomon Islands">Solomon Islands</option>
+      <option value="SO" label="Somalia">Somalia</option>
+      <option value="ZA" label="South Africa">South Africa</option>
+      <option value="GS" label="South Georgia and The South Sandwich Islands">South Georgia and The South Sandwich Islands</option>
+      <option value="ES" label="Spain">Spain</option>
+      <option value="LK" label="Sri Lanka">Sri Lanka</option>
+      <option value="SD" label="Sudan">Sudan</option>
+      <option value="SR" label="Suriname">Suriname</option>
+      <option value="SJ" label="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+      <option value="SZ" label="Swaziland">Swaziland</option>
+      <option value="SE" label="Sweden">Sweden</option>
+      <option value="CH" label="Switzerland">Switzerland</option>
+      <option value="SY" label="Syrian Arab Republic">Syrian Arab Republic</option>
+      <option value="TW" label="Taiwan, Province of China">Taiwan, Province of China</option>
+      <option value="TJ" label="Tajikistan">Tajikistan</option>
+      <option value="TZ" label="Tanzania, United Republic of">Tanzania, United Republic of</option>
+      <option value="TH" label="Thailand">Thailand</option>
+      <option value="TL" label="Timor-leste">Timor-leste</option>
+      <option value="TG" label="Togo">Togo</option>
+      <option value="TK" label="Tokelau">Tokelau</option>
+      <option value="TO" label="Tonga">Tonga</option>
+      <option value="TT" label="Trinidad and Tobago">Trinidad and Tobago</option>
+      <option value="TN" label="Tunisia">Tunisia</option>
+      <option value="TR" label="Turkey">Turkey</option>
+      <option value="TM" label="Turkmenistan">Turkmenistan</option>
+      <option value="TC" label="Turks and Caicos Islands">Turks and Caicos Islands</option>
+      <option value="TV" label="Tuvalu">Tuvalu</option>
+      <option value="UG" label="Uganda">Uganda</option>
+      <option value="UA" label="Ukraine">Ukraine</option>
+      <option value="AE" label="United Arab Emirates">United Arab Emirates</option>
+      <option value="GB" label="United Kingdom">United Kingdom</option>
+      <option value="US" label="United States">United States</option>
+      <option value="UY" label="Uruguay">Uruguay</option>
+      <option value="UZ" label="Uzbekistan">Uzbekistan</option>
+      <option value="VU" label="Vanuatu">Vanuatu</option>
+      <option value="VE" label="Venezuela">Venezuela</option>
+      <option value="VN" label="Viet Nam">Viet Nam</option>
+      <option value="VG" label="Virgin Islands, British">Virgin Islands, British</option>
+      <option value="VI" label="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
+      <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
+      <option value="EH" label="Western Sahara">Western Sahara</option>
+      <option value="YE" label="Yemen">Yemen</option>
+      <option value="ZM" label="Zambia">Zambia</option>
+      <option value="ZW" label="Zimbabwe">Zimbabwe</option>
+    </select>
+  </td>
+</tr>
+</table>
+<br />
+</div>
+<br />
+<div id="quotescontainer" class="pickup-block" style="margin-top:20px;">
+  <h2>Shipment Information</h2>
+  <br />
+  <div id="quotescontainer" style="width: 300px;">
+    <table class="TableSTyle">
+      <tr>
+        <td>
+          <label for="serviceTypeIntl">Service Type <span>
+            <font color="red">*</font>
+          </span>
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <select name="serviceTypeIntl" id="serviceTypeIntl" onChange="setChkSelectIntl();">
+          <option value="" label=" -- Choose One --"> -- Choose One --</option>
+          <option value="INT.IP.AIR" label="International Parcel Air">International Parcel Air</option>
+          <option value="INT.IP.SURF" label="International Parcel Surface">International Parcel Surface</option>
+          <option value="INT.PW.ENV" label="Priority Worldwide Envelope Int'l">Priority Worldwide Envelope Int'l</option>
+          <option value="INT.PW.PAK" label="Priority Worldwide pak Int'l">Priority Worldwide pak Int'l</option>
+          <option value="INT.PW.PARCEL" label="Priority Worldwide parcel Int'l">Priority Worldwide parcel Int'l</option>
+          <option value="INT.SP.AIR" label="Small Packet International Air">Small Packet International Air</option>
+          <option value="INT.SP.SURF" label="Small Packet International Surface">Small Packet International Surface</option>
+          <option value="INT.TP" label="Tracked Packet International">Tracked Packet – International</option>
+          <option value="INT.XP" label="Xpresspost International">Xpresspost International</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+  <br />
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="weightIntl">weight (kg)<span>
+          <font color="red">*</font>
+        </span>
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="text" name="weightIntl" id="weightIntl" />
+    </td>
+  </tr>
+</table>
+</div>
+<div id="quotescontainercenter">
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label>Include dimension? <span>*</span>
+      </label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label>
+        <input class="dimensionnoIntl" type="radio" name="dimensionIntl" value="no"  />No</label>
+        <label>
+          <input class="dimensionyesIntl" type="radio" name="dimensionIntl" value="yes" checked="checked" />Yes</label>
+        </td>
+      </tr>
+    </table>
+    <br />
+    <div id="dimensionIntl">
+      <table class="TableSTyle">
+        <tr>
+          <td>
+            <label for="lengthIntl">Length:</label>
+            <font color="red">
+              <b> * </b>
+            </font>
+          </td>
+          <td>
+            <label for="widthIntl">Width:</label>
+            <font color="red">
+              <b> * </b>
+            </font>
+          </td>
+          <td>
+            <label for="heightIntl">Height:</label>
+            <font color="red">
+              <b> * </b>
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="lengthIntl" id="lengthIntl" onblur="CheckGirth()" />
+          </td>
+          <td>
+            <input type="text" name="widthIntl" id="widthIntl" onblur="CheckGirth()" />
+          </td>
+          <td>
+            <input type="text" name="heightIntl" id="heightIntl" onblur="CheckGirth(); VolumetricWeightIntl()" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br />
+  </div>
+  <div id="quotescontainerright" style="margin-left:180px;">
+    <table class="TableSTyle">
+      <tr>
+        <td>
+          <label>Shipping Options</label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="checkbox" name="optionfake" value="DC" disabled="disabled" checked /> Delivery Confirmation
+                                    <input type="hidden" name="optionDC" value="DC" checked />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="optionSOIntl">
+            <input type="checkbox" class="optionSOIntl" id="optionSOIntl" name="optionSOIntl" value="SO" />Signature On Delivery?</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="unpackagedIntl" id="unpackagedIntl" value="true" />
+            <label for="unpackagedIntl">unpackaged</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="oversizedIntl" id="oversizedIntl" value="true" />
+            <label for="oversizedIntl">oversized</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="mailingtubeIntl" id="mailingtubeIntl" value="true" />
+            <label for="malingtubeIntl">mailingtube</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="optionCOVIntl" value="COV" /> Insurance 
+                                    <input align="right" type="text" name="COVamountIntl" maxlength="9" />
+          </td>
+        </tr>
+      </table>
+      <br />
+      <table class="TableSTyle">
+        <tr>
+          <td>
+            <label> Non Delivery Options</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="raseIntl" id="raseIntl" value="RASE" />
+            <label for="raseIntl">return At Sender Expense</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="rtsIntl" id="rtsIntl" value="RTS" />
+            <label for="rtsIntl">return To Sender</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" name="abanIntl" id="abanIntl" value="ABAN" />
+            <label for="abanIntl">Abandon</label>
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+    <br />
+  </div>
+  <br />
+    <div class="pickup-block" style="margin-top:20px;">
+    <h2 style="margin-top:0;">Print Preferences</h2>
+    <table class="TableSTyle">
+      <tr>
+        <td>
+          <label for="outputFormatIntl" id="outputFormatIntl">Output Format <span>*</span>
+        </label>
+      </td>
+      <td>
+        <label for="showPackingInstructionsIntl" id="label-showPackingInstructionsIntl">Show Packing Instructions <span>*</span>
+      </label>
+    </td>
+    <td>
+      <label for="showPostageRateIntl" id="showPostageRateIntl">Show Postage Rate <span>*</span>
+    </label>
+  </td>
+  <td>
+    <label for="showInsuredValueIntl" id="showInsuredValueIntl">Show Insured Value <span>*</span>
+  </label>
+</td>
+</tr>
+<tr>
+  <td>
+    <select name="outputFormatIntl" id="outputFormatIntl">
+      <option value="8.5x11" label="8.5x11" selected="selected">8.5x11</option>
+      <option value="4x6" label="4x6">4x6</option>
+    </select>
+  </td>
+  <td>
+    <select name="showPackingInstructionsIntl" id="showPackingInstructionsIntl">
+      <option value="false" label="No" selected="selected">No</option>
+      <option value="true" label="Yes">Yes</option>
+    </select>
+  </td>
+  <td>
+    <select name="showPostageRateIntl" id="showPostageRateIntl">
+      <option value="false" label="No" selected="selected">No</option>
+      <option value="true" label="Yes">Yes</option>
+    </select>
+  </td>
+  <td>
+    <select name="showInsuredValueIntl" id="showInsuredValueIntl">
+      <option value="false" label="No" selected="selected">No</option>
+      <option value="true" label="Yes">Yes</option>
+    </select>
+  </td>
+</tr>
+</table>
+<br />
+</div>
+<br />
+  <div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Customs Information</h2>
+  <h3>Item List</h3>
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="customsCurrencyIntl" id="label-customsCurrency">Currency <font color="red">
+          <b> * </b>
+        </font>
+      </label>
+    </td>
+    <td>
+      <label for="customsConversionFromCadIntl" id="label-customsConversionFromCadIntl">Exchange Rate to Canadian Currency <span>*</span>
+    </label>
+  </td>
+  <td>
+    <label for="customsReasonForExportIntl" id="label-customsReasonForExportIntl">Reason For Export <font color="red">
+      <b> * </b>
+    </font>
+  </label>
+</td>
+<td>
+  <label for="otherreasonIntl" id="label-customsOtherReasonIntl">Other Reason <span>*</span>
+</label>
+</td>
+</tr>
+<tr>
+  <td>
+    <select name="customsCurrencyIntl" id="customsCurrencyIntl">
+      <option value="CAD" label="Canada Dollar" selected="selected">Canada Dollar</option>
+      <option value="USD" label="United States Dollar">United States Dollar</option>
+      <option value="AED" label="United Arab Emirates Dirham">United Arab Emirates Dirham</option>
+      <option value="AFN" label="Afghanistan Afghani">Afghanistan Afghani</option>
+    </select>
+  </td>
+  <td>
+    <input type="text" name="customsConversionFromCadIntl" id="customsConversionFromCadIntl" />
+  </td>
+  <td>
+    <select name="customsReasonForExportIntl" id="customsReasonForExportIntl">
+      <option value="GIF" label="Gift">Gift</option>
+      <option value="DOC" label="Document">Document</option>
+      <option value="SAM" label="Commercial Sample">Commercial Sample</option>
+      <option value="REP" label="Repair or Warranty">Repair or Warranty</option>
+      <option value="SOG" label="Sale of Goods">Sale of Goods</option>
+      <option value="OTH" label="Other" selected="selected">Other</option>
+    </select>
+  </td>
+  <td>
+    <input type="text" name="otherreasonIntl" id="otherreasonIntl" maxlength="44" />
+  </td>
+</tr>
+</table>
+<br />
+<table class="TableSTyle">
+  <tr>
+    <td>
+      <label for="addcustomIntl" id="label-customsOtherReasonIntl">add custom info <b> * </b>
+    </label>
+  </td>
+  <td>
+    <label for="hstarrifcodeIntl" id="label-hstarrifcodeIntl">hs tarrif code<b> * </b>
+  </label>
+</td>
+<td>
+  <label for="skuIntl" id="label-skuIntl">sku <span>*</span>
+</label>
+</td>
+<td>
+  <label for="customsDescriptionIntl" id="label-customsDescriptionIntl">Customs Description <span>
+    <font color="red">*</font>
+  </span>
+</label>
+</td>
+<td>
+  <label for="customsunitvalueIntl" id="label-customsunitvalueIntl">Unit Value <span>
+    <font color="red">*</font>
+  </span>
+</label>
+</td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="addcustomIntl" id="addcustomIntl" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="hstarrifcodeIntl" id="hstarrifcodeIntl" value="9999.99.99.99" />
+  </td>
+  <td>
+    <input type="text" name="skuIntl" id="skuIntl" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="customsDescriptionIntl" id="customsDescriptionIntl" value="description" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="customsunitvalueIntl" id="customsunitvalueIntl" value="1" maxlength="7" />
+  </td>
+</tr>
+</table>
+<br />
+<table class="TableSTyle">
+  <tr>
+    <td>
+      <label for="customsNumberOfUnitsIntl" id="label-customsNumberOfUnitsIntl">Number of Units <span>
+        <font color="red">*</font>
+      </span>
+    </label>
+  </td>
+  <td>
+    <label for="customsUnitWeightIntl" id="label-customsUnitWeightIntl">Total Units Weight <span>
+      <font color="red">*</font>
+    </span>
+  </label>
+</td>
+<td>
+  <label for="customsCountryOfOriginIntl" id="label-ccustomsCountryOfOriginIntl">Country of Origin</label>
+</td>
+<td>
+  <label for="customprovinceoforiginIntl" id="label-ccustomprovinceoforiginIntl">Province of Origin</label>
+</td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="customsNumberOfUnitsIntl" id="customsNumberOfUnitsIntl" value="1" maxlength="44" />
+  </td>
+  <td>
+    <input type="text" name="customsUnitWeightIntl" id="customsUnitWeightIntl" maxlength="7" value="11" onblur="CheckWeightCustomIntl()" />
+  </td>
+  <td>
+    <select name="customsCountryOfOriginIntl" id="customsCountryOfOriginIntl">
+      <option value="" label=" -- Choose One --"> -- Choose One --</option>
+      <option value="AF" label="Afghanistan">Afghanistan</option>
+      <option value="AX" label="Åland Islands">Åland Islands</option>
+      <option value="AL" label="Albania">Albania</option>
+      <option value="DZ" label="Algeria">Algeria</option>
+      <option value="AS" label="American Samoa">American Samoa</option>
+      <option value="AD" label="Andorra">Andorra</option>
+      <option value="AO" label="Angola">Angola</option>
+      <option value="AI" label="Anguilla">Anguilla</option>
+      <option value="AQ" label="Antarctica">Antarctica</option>
+      <option value="AG" label="Antigua and Barbuda">Antigua and Barbuda</option>
+      <option value="AR" label="Argentina">Argentina</option>
+      <option value="AM" label="Armenia">Armenia</option>
+      <option value="AW" label="Aruba">Aruba</option>
+      <option value="AU" label="Australia">Australia</option>
+      <option value="AT" label="Austria">Austria</option>
+      <option value="AZ" label="Azerbaijan">Azerbaijan</option>
+      <option value="BS" label="Bahamas">Bahamas</option>
+      <option value="BH" label="Bahrain">Bahrain</option>
+      <option value="BD" label="Bangladesh">Bangladesh</option>
+      <option value="BB" label="Barbados">Barbados</option>
+      <option value="BY" label="Belarus">Belarus</option>
+      <option value="BE" label="Belgium">Belgium</option>
+      <option value="BZ" label="Belize">Belize</option>
+      <option value="BJ" label="Benin">Benin</option>
+      <option value="BM" label="Bermuda">Bermuda</option>
+      <option value="BT" label="Bhutan">Bhutan</option>
+      <option value="BO" label="Bolivia">Bolivia</option>
+      <option value="BA" label="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+      <option value="BW" label="Botswana">Botswana</option>
+      <option value="BV" label="Bouvet Island">Bouvet Island</option>
+      <option value="BR" label="Brazil">Brazil</option>
+      <option value="IO" label="British Indian Ocean Territory">British Indian Ocean Territory</option>
+      <option value="BN" label="Brunei Darussalam">Brunei Darussalam</option>
+      <option value="BG" label="Bulgaria">Bulgaria</option>
+      <option value="BF" label="Burkina Faso">Burkina Faso</option>
+      <option value="BI" label="Burundi">Burundi</option>
+      <option value="KH" label="Cambodia">Cambodia</option>
+      <option value="CM" label="Cameroon">Cameroon</option>
+      <option value="CA" label="Canada">Canada</option>
+      <option value="CV" label="Cape Verde">Cape Verde</option>
+      <option value="KY" label="Cayman Islands">Cayman Islands</option>
+      <option value="CF" label="Central African Republic">Central African Republic</option>
+      <option value="TD" label="Chad">Chad</option>
+      <option value="CL" label="Chile">Chile</option>
+      <option value="CN" label="China">China</option>
+      <option value="CX" label="Christmas Island">Christmas Island</option>
+      <option value="CC" label="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+      <option value="CO" label="Colombia">Colombia</option>
+      <option value="KM" label="Comoros">Comoros</option>
+      <option value="CG" label="Congo">Congo</option>
+      <option value="CD" label="Congo, The Democratic Republic of The">Congo, The Democratic Republic of The</option>
+      <option value="CK" label="Cook Islands">Cook Islands</option>
+      <option value="CR" label="Costa Rica">Costa Rica</option>
+      <option value="CI" label="Cote D'ivoire">Cote D'ivoire</option>
+      <option value="HR" label="Croatia">Croatia</option>
+      <option value="CU" label="Cuba">Cuba</option>
+      <option value="CY" label="Cyprus">Cyprus</option>
+      <option value="CZ" label="Czech Republic">Czech Republic</option>
+      <option value="DK" label="Denmark">Denmark</option>
+      <option value="DJ" label="Djibouti">Djibouti</option>
+      <option value="DM" label="Dominica">Dominica</option>
+      <option value="DO" label="Dominican Republic">Dominican Republic</option>
+      <option value="EC" label="Ecuador">Ecuador</option>
+      <option value="EG" label="Egypt">Egypt</option>
+      <option value="SV" label="El Salvador">El Salvador</option>
+      <option value="GQ" label="Equatorial Guinea">Equatorial Guinea</option>
+      <option value="ER" label="Eritrea">Eritrea</option>
+      <option value="EE" label="Estonia">Estonia</option>
+      <option value="ET" label="Ethiopia">Ethiopia</option>
+      <option value="FK" label="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+      <option value="FO" label="Faroe Islands">Faroe Islands</option>
+      <option value="FJ" label="Fiji">Fiji</option>
+      <option value="FI" label="Finland">Finland</option>
+      <option value="FR" label="France">France</option>
+      <option value="GF" label="French Guiana">French Guiana</option>
+      <option value="PF" label="French Polynesia">French Polynesia</option>
+      <option value="TF" label="French Southern Territories">French Southern Territories</option>
+      <option value="GA" label="Gabon">Gabon</option>
+      <option value="GM" label="Gambia">Gambia</option>
+      <option value="GE" label="Georgia">Georgia</option>
+      <option value="DE" label="Germany">Germany</option>
+      <option value="GH" label="Ghana">Ghana</option>
+      <option value="GI" label="Gibraltar">Gibraltar</option>
+      <option value="GR" label="Greece">Greece</option>
+      <option value="GL" label="Greenland">Greenland</option>
+      <option value="GD" label="Grenada">Grenada</option>
+      <option value="GP" label="Guadeloupe">Guadeloupe</option>
+      <option value="GU" label="Guam">Guam</option>
+      <option value="GT" label="Guatemala">Guatemala</option>
+      <option value="GG" label="Guernsey">Guernsey</option>
+      <option value="GN" label="Guinea">Guinea</option>
+      <option value="GW" label="Guinea-bissau">Guinea-bissau</option>
+      <option value="GY" label="Guyana">Guyana</option>
+      <option value="HT" label="Haiti">Haiti</option>
+      <option value="HM" label="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option>
+      <option value="VA" label="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+      <option value="HN" label="Honduras">Honduras</option>
+      <option value="HK" label="Hong Kong">Hong Kong</option>
+      <option value="HU" label="Hungary">Hungary</option>
+      <option value="IS" label="Iceland">Iceland</option>
+      <option value="IN" label="India">India</option>
+      <option value="ID" label="Indonesia">Indonesia</option>
+      <option value="IR" label="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+      <option value="IQ" label="Iraq">Iraq</option>
+      <option value="IE" label="Ireland">Ireland</option>
+      <option value="IM" label="Isle of Man">Isle of Man</option>
+      <option value="IL" label="Israel">Israel</option>
+      <option value="IT" label="Italy">Italy</option>
+      <option value="JM" label="Jamaica">Jamaica</option>
+      <option value="JP" label="Japan">Japan</option>
+      <option value="JE" label="Jersey">Jersey</option>
+      <option value="JO" label="Jordan">Jordan</option>
+      <option value="KZ" label="Kazakhstan">Kazakhstan</option>
+      <option value="KE" label="Kenya">Kenya</option>
+      <option value="KI" label="Kiribati">Kiribati</option>
+      <option value="KP" label="Korea, Democratic People\s Republic of">Korea, Democratic People\s Republic of</option>
+      <option value="KR" label="Korea, Republic of">Korea, Republic of</option>
+      <option value="KW" label="Kuwait">Kuwait</option>
+      <option value="KG" label="Kyrgyzstan">Kyrgyzstan</option>
+      <option value="LA" label="Lao People\s Democratic Republic">Lao People\s Democratic Republic</option>
+      <option value="LV" label="Latvia">Latvia</option>
+      <option value="LB" label="Lebanon">Lebanon</option>
+      <option value="LS" label="Lesotho">Lesotho</option>
+      <option value="LR" label="Liberia">Liberia</option>
+      <option value="LY" label="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+      <option value="LI" label="Liechtenstein">Liechtenstein</option>
+      <option value="LT" label="Lithuania">Lithuania</option>
+      <option value="LU" label="Luxembourg">Luxembourg</option>
+      <option value="MO" label="Macao">Macao</option>
+      <option value="MK" label="Macedonia, The Former Yugoslav Republic of">Macedonia, The Former Yugoslav Republic of</option>
+      <option value="MG" label="Madagascar">Madagascar</option>
+      <option value="MW" label="Malawi">Malawi</option>
+      <option value="MY" label="Malaysia">Malaysia</option>
+      <option value="MV" label="Maldives">Maldives</option>
+      <option value="ML" label="Mali">Mali</option>
+      <option value="MT" label="Malta">Malta</option>
+      <option value="MH" label="Marshall Islands">Marshall Islands</option>
+      <option value="MQ" label="Martinique">Martinique</option>
+      <option value="MR" label="Mauritania">Mauritania</option>
+      <option value="MU" label="Mauritius">Mauritius</option>
+      <option value="YT" label="Mayotte">Mayotte</option>
+      <option value="MX" label="Mexico">Mexico</option>
+      <option value="FM" label="Micronesia, Federated States of">Micronesia, Federated States of</option>
+      <option value="MD" label="Moldova, Republic of">Moldova, Republic of</option>
+      <option value="MC" label="Monaco">Monaco</option>
+      <option value="MN" label="Mongolia">Mongolia</option>
+      <option value="ME" label="Montenegro">Montenegro</option>
+      <option value="MS" label="Montserrat">Montserrat</option>
+      <option value="MA" label="Morocco">Morocco</option>
+      <option value="MZ" label="Mozambique">Mozambique</option>
+      <option value="MM" label="Myanmar">Myanmar</option>
+      <option value="NA" label="Namibia">Namibia</option>
+      <option value="NR" label="Nauru">Nauru</option>
+      <option value="NP" label="Nepal">Nepal</option>
+      <option value="NL" label="Netherlands">Netherlands</option>
+      <option value="AN" label="Netherlands Antilles">Netherlands Antilles</option>
+      <option value="NC" label="New Caledonia">New Caledonia</option>
+      <option value="NZ" label="New Zealand">New Zealand</option>
+      <option value="NI" label="Nicaragua">Nicaragua</option>
+      <option value="NE" label="Niger">Niger</option>
+      <option value="NG" label="Nigeria">Nigeria</option>
+      <option value="NU" label="Niue">Niue</option>
+      <option value="NF" label="Norfolk Island">Norfolk Island</option>
+      <option value="MP" label="Northern Mariana Islands">Northern Mariana Islands</option>
+      <option value="NO" label="Norway">Norway</option>
+      <option value="OM" label="Oman">Oman</option>
+      <option value="PK" label="Pakistan">Pakistan</option>
+      <option value="PW" label="Palau">Palau</option>
+      <option value="PS" label="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+      <option value="PA" label="Panama">Panama</option>
+      <option value="PG" label="Papua New Guinea">Papua New Guinea</option>
+      <option value="PY" label="Paraguay">Paraguay</option>
+      <option value="PE" label="Peru">Peru</option>
+      <option value="PH" label="Philippines">Philippines</option>
+      <option value="PN" label="Pitcairn">Pitcairn</option>
+      <option value="PL" label="Poland">Poland</option>
+      <option value="PT" label="Portugal">Portugal</option>
+      <option value="PR" label="Puerto Rico">Puerto Rico</option>
+      <option value="QA" label="Qatar">Qatar</option>
+      <option value="RE" label="Reunion">Reunion</option>
+      <option value="RO" label="Romania">Romania</option>
+      <option value="RU" label="Russian Federation">Russian Federation</option>
+      <option value="RW" label="Rwanda">Rwanda</option>
+      <option value="SH" label="Saint Helena">Saint Helena</option>
+      <option value="KN" label="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+      <option value="LC" label="Saint Lucia">Saint Lucia</option>
+      <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+      <option value="VC" label="Saint Vincent and The Grenadines">Saint Vincent and The Grenadines</option>
+      <option value="WS" label="Samoa">Samoa</option>
+      <option value="SM" label="San Marino">San Marino</option>
+      <option value="ST" label="Sao Tome and Principe">Sao Tome and Principe</option>
+      <option value="SA" label="Saudi Arabia">Saudi Arabia</option>
+      <option value="SN" label="Senegal">Senegal</option>
+      <option value="RS" label="Serbia">Serbia</option>
+      <option value="SC" label="Seychelles">Seychelles</option>
+      <option value="SL" label="Sierra Leone">Sierra Leone</option>
+      <option value="SG" label="Singapore">Singapore</option>
+      <option value="SK" label="Slovakia">Slovakia</option>
+      <option value="SI" label="Slovenia">Slovenia</option>
+      <option value="SB" label="Solomon Islands">Solomon Islands</option>
+      <option value="SO" label="Somalia">Somalia</option>
+      <option value="ZA" label="South Africa">South Africa</option>
+      <option value="GS" label="South Georgia and The South Sandwich Islands">South Georgia and The South Sandwich Islands</option>
+      <option value="ES" label="Spain">Spain</option>
+      <option value="LK" label="Sri Lanka">Sri Lanka</option>
+      <option value="SD" label="Sudan">Sudan</option>
+      <option value="SR" label="Suriname">Suriname</option>
+      <option value="SJ" label="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+      <option value="SZ" label="Swaziland">Swaziland</option>
+      <option value="SE" label="Sweden">Sweden</option>
+      <option value="CH" label="Switzerland">Switzerland</option>
+      <option value="SY" label="Syrian Arab Republic">Syrian Arab Republic</option>
+      <option value="TW" label="Taiwan, Province of China">Taiwan, Province of China</option>
+      <option value="TJ" label="Tajikistan">Tajikistan</option>
+      <option value="TZ" label="Tanzania, United Republic of">Tanzania, United Republic of</option>
+      <option value="TH" label="Thailand">Thailand</option>
+      <option value="TL" label="Timor-leste">Timor-leste</option>
+      <option value="TG" label="Togo">Togo</option>
+      <option value="TK" label="Tokelau">Tokelau</option>
+      <option value="TO" label="Tonga">Tonga</option>
+      <option value="TT" label="Trinidad and Tobago">Trinidad and Tobago</option>
+      <option value="TN" label="Tunisia">Tunisia</option>
+      <option value="TR" label="Turkey">Turkey</option>
+      <option value="TM" label="Turkmenistan">Turkmenistan</option>
+      <option value="TC" label="Turks and Caicos Islands">Turks and Caicos Islands</option>
+      <option value="TV" label="Tuvalu">Tuvalu</option>
+      <option value="UG" label="Uganda">Uganda</option>
+      <option value="UA" label="Ukraine">Ukraine</option>
+      <option value="AE" label="United Arab Emirates">United Arab Emirates</option>
+      <option value="GB" label="United Kingdom">United Kingdom</option>
+      <option value="US" label="United States">United States</option>
+      <option value="UY" label="Uruguay">Uruguay</option>
+      <option value="UZ" label="Uzbekistan">Uzbekistan</option>
+      <option value="VU" label="Vanuatu">Vanuatu</option>
+      <option value="VE" label="Venezuela">Venezuela</option>
+      <option value="VN" label="Viet Nam">Viet Nam</option>
+      <option value="VG" label="Virgin Islands, British">Virgin Islands, British</option>
+      <option value="VI" label="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
+      <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
+      <option value="EH" label="Western Sahara">Western Sahara</option>
+      <option value="YE" label="Yemen">Yemen</option>
+      <option value="ZM" label="Zambia">Zambia</option>
+      <option value="ZW" label="Zimbabwe">Zimbabwe</option>
+    </select>
+  </td>
+  <td>
+    <select name="customprovinceoforiginIntl" id="customprovinceoforiginIntl">
+      <option value=""> -- Choose One --</option>
+      <option value="AB" label="Alberta">Alberta</option>
+      <option value="BC" label="British Columbia">British Columbia</option>
+      <option value="MB" label="Manitoba">Manitoba</option>
+      <option value="NB" label="New Brunswick">New Brunswick</option>
+      <option value="NL" label="Newfoundland and Labrador">Newfoundland and Labrador</option>
+      <option value="NS" label="Nova Scotia">Nova Scotia</option>
+      <option value="NT" label="Northwest Territories">Northwest Territories</option>
+      <option value="NU" label="Nunavut">Nunavut</option>
+      <option value="ON" label="Ontario">Ontario</option>
+      <option value="PE" label="Prince Edward Island">Prince Edward Island</option>
+      <option value="QC" label="Québec">Québec</option>
+      <option value="SK" label="Saskatchewan">Saskatchewan</option>
+      <option value="YT" label="Yukon">Yukon</option>
+    </select>
+  </td>
+</tr>
+</table>
+<br />
+</div>
+<br />
+  <div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Tracking Information</h2>
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="costcenterIntl" id="label-costcenterIntl">costcenter</label>
+      </td>
+      <td>
+        <label for="customerref1Intl" id="label-customerref1Intl">Cost customerref1</label>
+      </td>
+      <td>
+        <label for="customerref2Intl" id="label-customerref2">customerref2</label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="costcenterIntl" id="costcenterIntl" value="interninvoiceref" maxlength="35" />
+      </td>
+      <td>
+        <input type="text" name="customerref1Intl" id="customerref1Intl" value="ref1" maxlength="30" />
+      </td>
+      <td>
+        <input type="text" name="customerref2Intl" id="customerref2Intl" value="ref2" maxlength="35" />
+      </td>
+    </tr>
+  </table>
+  <br />
+</div>
+<br />
+  <div class="pickup-block" style="margin-top:20px;">
+  <br />
+  <h2 style="margin-top:0;">Electronic Delivery Updates</h2>
+  <p>
+                        This option allows you to request emails to be sent when your item is shipped, delivered, signature obtained or unforeseen delivery interruptions occur.
+                        This option is available for services with delivery confirmation (barcoded) only.
+                    </p>
+  <table class="TableSTyle">
+    <tr>
+      <td>
+        <label for="eNoticeEmailIntl" id="eNoticeEmailIntl">Email</label>
+      </td>
+      <td>
+        <label for="eNoticeShipIntl" id="eNoticeShipIntl">Ship</label>
+                                Email notification when the shipment order is created and the item is provided to Canada Post for delivery.
+
+                            </td>
+        <td>
+          <label for="eNoticeExceptionIntl" id="eNoticeExceptionIntl">Exception</label>
+                                Email notification when any unforeseen delivery interruptions occur.
+
+                            </td>
+          <td>
+            <label for="eNoticeDeliveryIntl" id="eNoticeDeliveryIntl">Delivery</label>
+
+                                Email notification when a Delivery Notice Card notifying the recipient to pick the item up at a local post office is delivered.
+
+                            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" name="eNoticeEmailIntl" id="eNoticeEmailIntl" value="admin@fabsandbox.com"maxlength="60" />
+            </td>
+            <td>
+              <input type="hidden" name="eNoticeShipIntl" value="false" />
+              <input type="checkbox" name="eNoticeShipIntl" id="eNoticeShipIntl" value="true" checked="checked" />
+            </td>
+            <td>
+              <input type="hidden" name="eNoticeExceptionIntl" value="false" />
+              <input type="checkbox" name="eNoticeExceptionIntl" id="eNoticeExceptionIntl" value="true" checked="checked" />
+            </td>
+            <td>
+              <input type="hidden" name="eNoticeDeliveryIntl" value="false" />
+              <input type="checkbox" name="eNoticeDeliveryIntl" id="eNoticeDeliveryIntl" value="true" checked="checked" />
+            </td>
+          </tr>
+        </table>
+        <br />
+      </div>
+      <br />
+      <div class="form-footer-actions">
+        <input class="button button-small" type="submit" id="submitButton" name="submitButton" value="Create Shipment" />
+        <button type="button" onclick="window.location.href = '../index.html';">
+          Go to main Screen
+        </button>
+      </div>
+    </form>
+  </div>
+  <!---INTERNATIONAL FORM END ------>
+</div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

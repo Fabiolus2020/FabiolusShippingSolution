@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create Shipment – Web Service Test Tool</title>
+
+    <!-- Optional existing stylesheet -->
+    <!-- <link rel="stylesheet" type="text/css" href="../main.css" /> -->
+
+    <!-- jQuery kept for legacy inline scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #050814;
+            --bg-card: #0f172a;
+            --bg-cred: #020617;
+            --border-subtle: #1e293b;
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.12);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --danger: #f97373;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+            color: var(--text-main);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .app-root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header-bar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .app-header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .app-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .app-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .app-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge-env {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            align-self: flex-start;
+        }
+
+        .cred-strip {
+            width: 100%;
+            background: var(--bg-cred);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .cred-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 12px;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .cred-field-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cred-label {
+            color: var(--text-muted);
+        }
+
+        .cred-input {
+            background: #020617;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            padding: 5px 8px;
+            min-width: 170px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .cred-input:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        .cred-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .cred-status {
+            font-size: 0.8rem;
+            color: #4ade80;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .cred-status.visible {
+            opacity: 1;
+        }
+
+        .app-main {
+            flex: 1;
+        }
+
+        .app-main-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 20px 32px;
+        }
+
+        .banner-note {
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px dashed var(--border-subtle);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .banner-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--danger);
+            box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.2);
+        }
+
+        .layout-main-card {
+            margin-top: 12px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            padding: 16px 16px 18px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.5);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        .card-body {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+        }
+
+        .legacy-form {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+            overflow-x: auto;
+        }
+
+        @media (max-width: 640px) {
+            .app-header-inner {
+                padding: 12px 14px 8px;
+            }
+            .cred-inner {
+                padding: 8px 14px;
+            }
+            .app-main-inner {
+                padding: 14px 14px 26px;
+            }
+        }
+    
+        /* Legacy tabs restyled with vanilla JS */
+        #tabs {
+            margin-top: 12px;
+        }
+        #tabs > ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        #tabs > ul li {
+            margin: 0;
+        }
+        #tabs > ul li a {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px 999px 0 0;
+            border: 1px solid transparent;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            background: transparent;
+            text-decoration: none;
+        }
+        #tabs > ul li a.active {
+            color: var(--accent);
+            border-color: var(--border-subtle);
+            border-bottom-color: var(--bg-card);
+            background: rgba(15, 23, 42, 0.95);
+        }
+        #tabs-1,
+        #tabs-2,
+        #tabs-3 {
+            /* JS will override display on active tab */
+        }
+
+        .tab-description {
+            margin-bottom: 14px;
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+        }
+        .tab-description h2 {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .tab-description p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .tab-description hr {
+            margin-top: 10px;
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+
+        .required-star {
+            color: #f97373;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+        .pickup-block {
+            margin-top: 6px;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-subtle);
+        }
+        .pickup-label-row {
+            margin-bottom: 6px;
+        }
+        .pickup-label {
+            font-size: 0.86rem;
+            font-weight: 500;
+        }
+        .pickup-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin-bottom: 6px;
+        }
+        .pickup-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .pickup-option input[type="radio"] {
+            accent-color: var(--accent);
+        }
+        .pickup-hint {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 52rem;
+        }
+        .pickup-section {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-subtle);
+        }
+        .pickup-section--hidden {
+            display: none;
+        }
+        .pickup-section p {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+
+        /* Form layout refinements */
+        .legacy-form {
+            font-size: 0.86rem;
+        }
+
+        table.TableStyle {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        table.TableStyle td {
+            padding: 4px 6px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.6);
+        }
+
+        table.TableStyle tr:last-child td {
+            border-bottom: none;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        select,
+        textarea {
+            background: #020617;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            padding: 5px 7px;
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: 1px solid var(--accent);
+            border-color: var(--accent);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* Buttons */
+        input[type="submit"],
+        button {
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            padding: 6px 16px;
+            font-size: 0.86rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.04s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background: rgba(56, 189, 248, 0.22);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+        }
+
+        input[type="submit"]:active,
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .pickup-block h2 {
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .pickup-block + .pickup-block {
+            margin-top: 12px;
+        }
+
+        /* Align footer buttons */
+        .form-footer-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+/* Force all containers to have identical width */
+.pickup-block {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+
+        .shipment-options-layout {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .shipment-options-top {
+            display: flex;
+            justify-content: center;
+        }
+        .shipment-options-top .TableStyle {
+            max-width: 360px;
+        }
+        .shipment-options-main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+        .shipment-options-col {
+            flex: 1 1 260px;
+            min-width: 0;
+        }
+</style>
+
+    <script>
+        // Simple helper to share credentials across pages if needed
+        window.getApiCredentials = function () {
+            return {
+                username: sessionStorage.getItem("apiUsername") || "",
+                password: sessionStorage.getItem("apiPassword") || ""
+            };
+        };
+
+        
+document.addEventListener("DOMContentLoaded", function () {
+            const userInput = document.getElementById("apiUsername");
+            const passInput = document.getElementById("apiPassword");
+            const saveBtn = document.getElementById("saveApiCredentials");
+            const statusSpan = document.getElementById("apiSaveStatus");
+
+            if (userInput && passInput && saveBtn && statusSpan) {
+                userInput.value = sessionStorage.getItem("apiUsername") || "";
+                passInput.value = sessionStorage.getItem("apiPassword") || "";
+
+                saveBtn.addEventListener("click", function () {
+                    const u = userInput.value;
+                    const p = passInput.value;
+
+                    sessionStorage.setItem("apiUsername", u);
+                    sessionStorage.setItem("apiPassword", p);
+
+                    statusSpan.textContent = "Credentials saved in this browser session.";
+                    statusSpan.classList.add("visible");
+
+                    setTimeout(() => {
+                        statusSpan.classList.remove("visible");
+                    }, 2500);
+                });
+            }
+
+            
+            // Auto-populate Expected Mailing Date with today's date (YYYY-MM-DD) if empty
+            try {
+                const mailingDateField = document.getElementById("datepicker");
+                if (mailingDateField && !mailingDateField.value) {
+                    const today = new Date();
+                    const yyyy = today.getFullYear();
+                    const mm = String(today.getMonth() + 1).padStart(2, "0");
+                    const dd = String(today.getDate()).padStart(2, "0");
+                    mailingDateField.value = `${yyyy}-${mm}-${dd}`;
+                }
+            } catch (e) {
+                console.warn("Unable to auto-fill Expected Mailing Date", e);
+            }
+
+// Simple vanilla JS tabs for Canada / USA / International
+            const tabsRoot = document.getElementById("tabs");
+            if (tabsRoot) {
+                const tabLinks = tabsRoot.querySelectorAll("ul li a[href^='#tabs-']");
+                const panels = [];
+
+                tabLinks.forEach(link => {
+                    const targetId = link.getAttribute("href").slice(1);
+                    const panel = document.getElementById(targetId);
+                    if (panel) {
+                        panels.push(panel);
+                    }
+                });
+
+                function activateTab(targetId) {
+                    tabLinks.forEach(link => {
+                        const id = link.getAttribute("href").slice(1);
+                        if (id === targetId) {
+                            link.classList.add("active");
+                        } else {
+                            link.classList.remove("active");
+                        }
+                    });
+
+                    panels.forEach(panel => {
+                        if (panel.id === targetId) {
+                            panel.style.display = "";
+                        } else {
+                            panel.style.display = "none";
+                        }
+                    });
+                }
+
+                tabLinks.forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const targetId = link.getAttribute("href").slice(1);
+                        activateTab(targetId);
+                    });
+                });
+
+                if (tabLinks.length > 0) {
+                    const firstId = tabLinks[0].getAttribute("href").slice(1);
+                    activateTab(firstId);
+                }
+            }
+      
+
+
+            // Initialize pickup radio for Canada tab from profile settings (if available)
+            try {
+                const storedPickup = sessionStorage.getItem("profilePickupPreference");
+                if (storedPickup === "yes" || storedPickup === "no") {
+                    const radio = document.querySelector("input[name='pickupquestion'][value='" + storedPickup + "']");
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                }
+            } catch (e) {
+                console.warn("Unable to read stored pickup preference", e);
+            }
+
+
+            // Auto-fill Post Office ID if user is depositing (pickup=no)
+            try {
+                const storedPoId = sessionStorage.getItem("profilePostOfficeId");
+                const storedPickup = sessionStorage.getItem("profilePickupPreference");
+
+                if (storedPickup === "no" && storedPoId) {
+                    const poField = document.getElementById("postofficeid");
+                    if (poField) {
+                        poField.value = storedPoId;
+                    }
+                }
+            } catch (e) {
+                console.warn("Unable to load Post Office ID", e);
+            }
+
+            
+            // Load Manifest selection from profile into the dropdown
+            try {
+                const m = sessionStorage.getItem("profileManifestInclude");
+                const manifestSelect = document.getElementById("manifestquestion");
+                if (manifestSelect && (m === "yes" || m === "no")) {
+                    manifestSelect.value = m;
+
+                    // Also apply corresponding visibility for pricing vs Group ID
+                    const pricingDiv = document.getElementById("pricingdiv");
+                    const groupSection = document.getElementById("GroupIdSection");
+                    if (pricingDiv && groupSection) {
+                        if (m === "no") {
+                            pricingDiv.style.display = "";
+                            groupSection.style.display = "none";
+                        } else {
+                            pricingDiv.style.display = "none";
+                            groupSection.style.display = "";
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Unable to load manifest selection", e);
+            }
+
+            // Load Group ID (Option A)
+            try {
+                const gid = sessionStorage.getItem("profileGroupId");
+                if (gid) {
+                    const gField = document.getElementById("groupId");
+                    if (gField) gField.value = gid;
+                }
+            } catch(e){}
+
+            // Load Promo Code (Option B)
+            try {
+                const promo = sessionStorage.getItem("profilePromoCode");
+                if (promo !== null) {
+                    const pField = document.getElementById("promocode");
+                    if (pField) pField.value = promo;
+                }
+            } catch(e){}
+            // Auto-fill mailedBy / mailed on behalf of / contract / paid by / method of payment from profile
+            try {
+                const acct = sessionStorage.getItem("profileAccountNumber");
+                const contract = sessionStorage.getItem("profileContractNumber");
+                const payee = sessionStorage.getItem("profileResponsiblePayee");
+                const payMethod = sessionStorage.getItem("profilePaymentMethod");
+
+                const mailedByField = document.getElementById("mailedBy");
+                const moboField = document.getElementById("mobo");
+                const agreementField = document.querySelector("input#agreement");
+                const paidByField = document.getElementById("paidBy");
+                const methodSelect = document.getElementById("methodOfPayment");
+
+                if (acct) {
+                    if (mailedByField) mailedByField.value = acct;
+                    if (moboField) moboField.value = acct;
+                }
+
+                if (contract && agreementField) {
+                    agreementField.value = contract;
+                }
+
+                if (payee && paidByField) {
+                    paidByField.value = payee;
+                }
+
+                if (payMethod && methodSelect) {
+                    // Map profile payment method values to Create Shipment values
+                    const paymentMap = {
+                        account: "Account",
+                        credit: "CreditCard",
+                        cod: "Account" // COD still billed to account for method-of-payment
+                    };
+                    const mapped = paymentMap[payMethod] || payMethod;
+                    methodSelect.value = mapped;
+                }
+            } catch (e) {
+                console.warn("Unable to autofill payment/account fields from profile", e);
+            }
+            // Auto-fill Continuous Inbound Freight (CIF) from profile
+            try {
+                const cif = sessionStorage.getItem("profileContinuousInboundFreight");
+                const cifSelect = document.getElementById("CIF");
+                if (cifSelect && (cif === "true" || cif === "false")) {
+                    cifSelect.value = cif;
+                }
+            } catch (e) {
+                console.warn("Unable to load Continuous Inbound Freight from profile", e);
+            }
+
+
+
+
+            // Auto-fill Sender Information from User Profile
+            try {
+                const senderCompany = sessionStorage.getItem("profileSenderCompany") || "";
+                const senderName = sessionStorage.getItem("profileSenderName") || "";
+                const senderPhone = sessionStorage.getItem("profileSenderPhone") || "";
+                const senderAddr1 = sessionStorage.getItem("profileSenderAddress1") || "";
+                const senderAddr2 = sessionStorage.getItem("profileSenderAddress2") || "";
+                const senderCity = sessionStorage.getItem("profileSenderCity") || "";
+                const senderProv = sessionStorage.getItem("profileSenderProvince") || "";
+                const senderPostal = sessionStorage.getItem("profileSenderPostal") || "";
+
+                const companyField = document.getElementById("senderCompany");
+                const phoneField = document.getElementById("contactPhone");
+                const nameField = document.getElementById("contactName");
+                const addr1Field = document.getElementById("customerAddressLine1");
+                const addr2Field = document.getElementById("customerAddressLine2");
+                const cityField = document.getElementById("customerCity");
+                const provSelect = document.getElementById("provstate");
+                const postalField = document.getElementById("customerPostalCode");
+
+                if (companyField && senderCompany) companyField.value = senderCompany;
+                if (phoneField && senderPhone) phoneField.value = senderPhone;
+                if (nameField && senderName) nameField.value = senderName;
+                if (addr1Field && senderAddr1) addr1Field.value = senderAddr1;
+                if (addr2Field && senderAddr2) addr2Field.value = senderAddr2;
+                if (cityField && senderCity) cityField.value = senderCity;
+                if (postalField && senderPostal) postalField.value = senderPostal;
+
+                if (provSelect && senderProv) {
+                    const opt = Array.from(provSelect.options).find(o => o.value === senderProv);
+                    if (opt) {
+                        provSelect.value = senderProv;
+                    }
+                }
+            } catch (e) {
+                console.warn("Unable to auto-fill sender information from profile", e);
+            }
+
+
+// Pickup vs Deposit toggle for Canada / USA / International
+            function wirePickupToggle(config) {
+                const {
+                    radioSelector,
+                    shippingSectionId,
+                    depositSectionId,
+                    groupIdFieldId
+                } = config;
+
+                const radios = document.querySelectorAll(radioSelector);
+                const shippingSection = document.getElementById(shippingSectionId);
+                const depositSection = document.getElementById(depositSectionId);
+                const groupField = document.getElementById(groupIdFieldId);
+
+                if (!radios || radios.length === 0 || !shippingSection || !depositSection) {
+                    return;
+                }
+
+                function apply(value) {
+                    if (value === "yes") {
+                        shippingSection.classList.remove("pickup-section--hidden");
+                        depositSection.style.display = "none";
+                        
+                    } else if (value === "no") {
+                        shippingSection.classList.add("pickup-section--hidden");
+                        depositSection.style.display = "";
+                        
+                    }
+                }
+
+                let initial = null;
+                radios.forEach(radio => {
+                    if (radio.checked) {
+                        initial = radio.value;
+                    }
+                    radio.addEventListener("change", () => {
+                        apply(radio.value);
+                    });
+                });
+
+                if (initial) {
+                    apply(initial);
+                } else {
+                    // Default to 'no' (deposit) if nothing is selected
+                    apply("no");
+                    radios.forEach(radio => {
+                        if (radio.value === "no") {
+                            radio.checked = true;
+                        }
+                    });
+                }
+            }
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestion']",
+                shippingSectionId: "shippingpointsection",
+                depositSectionId: "pickupsection",
+                groupIdFieldId: "groupId"
+            });
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestionUSA']",
+                shippingSectionId: "shippingpointsectionUSA",
+                depositSectionId: "pickupsectionUSA",
+                groupIdFieldId: "groupIdUSA"
+            });
+
+            wirePickupToggle({
+                radioSelector: "input[name='pickupquestionIntl']",
+                shippingSectionId: "shippingpointsectionIntl",
+                depositSectionId: "pickupsectionIntl",
+                groupIdFieldId: "groupIdIntl"
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+
+
+
+<div class="app-root">
+
+    <header class="app-header-bar">
+        <div class="app-header-inner">
+            <div class="app-title-block">
+                <div class="app-title">Create Shipment</div>
+                <div class="app-subtitle">Canada / USA / International &mdash; Web service test harness</div>
+            </div>
+            <div class="badge-env">Static prototype &middot; Legacy form preserved</div>
+        </div>
+
+        <div class="cred-strip">
+            <div class="cred-inner">
+                <div class="cred-field-group">
+                    <span class="cred-label">API Username</span>
+                    <input type="text" id="apiUsername" class="cred-input" autocomplete="off" />
+                </div>
+                <div class="cred-field-group">
+                    <span class="cred-label">API Password</span>
+                    <input type="password" id="apiPassword" class="cred-input" autocomplete="off" />
+                </div>
+                <div class="cred-actions">
+                    <button id="saveApiCredentials" class="btn-primary">Save for this session</button>
+                    <span id="apiSaveStatus" class="cred-status"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <div class="app-main-inner">
+            <div id="tabs">
+                <ul>
+                    <li><a href="index_CAN.html" class="active">🇨🇦 Canada</a></li>
+                    <li><a href="index_USA.html">🇺🇸 USA</a></li>
+                    <li><a href="index_INTL.html">🌍 International</a></li>
+                </ul>
+            </div>
+
+
+            <div class="banner-note">
+                <span class="banner-dot"></span>
+                <span>
+                    This page is an early refactor: modern shell UI with the original Create Shipment form embedded below.
+                    Form structure and field names are kept intact for now.
+                </span>
+            </div>
+
+            <div class="layout-main-card">
+                <section class="card">
+                    <div class="card-header">
+                        <div class="card-title">Legacy Create Shipment Form</div>
+                        <div class="card-tag">Canada · USA · International</div>
+                    </div>
+                    <div class="card-body">
+                        Use this form to exercise existing shipment creation flows. In later iterations, we can break this
+                        into smaller guided steps and add inline documentation, sample payloads, and API call previews.
+                    </div>
+                    <div class="legacy-form">
+
+<script>
+      <!-- this will generaterandom number and date stamp for customer request element -->
+        
+        window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+}
+    </script>
+    
+  <!--this will generaterandom number and date stamp for customer request element-->
+  <script>
+        function formatDate(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + '' + ampm;
+  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "_" + strTime;
+}
+
+var d = new Date();
+var e = formatDate(d);
+        
+        function randomnum() {
+  var min = 1;
+  var max = 9999999999;
+  var num = Math.floor(Math.random() * (max - min + 1)) + min;
+  var value = num + '_' + e;
+  ['custreq', 'custreqUSA', 'custreqIntl'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.value = value;
+    }
+  });
+}
+window.onload = randomnum;
+
+    </script>
+
+ <!-- This section is to display the pricing div when selecting no for having a manifest -->
+    <script>
+                                $(document).ready(function(){
+    $('#manifestquestion').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdiv").show();
+        $("#GroupIdSection").hide();
+      }
+      else
+      {
+        $("#pricingdiv").hide();
+        $("#GroupIdSection").show();
+      }
+    });
+});
+
+                                $(document).ready(function(){
+    $('#manifestquestionUSA').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdivUSA").show();
+        $("#GroupIdSectionUSA").hide();
+      }
+      else
+      {
+        $("#pricingdivUSA").hide();
+        $("#GroupIdSectionUSA").show();
+      }
+    });
+});
+
+                                $(document).ready(function(){
+    $('#manifestquestionIntl').on('change', function() {
+      if ( this.value == 'no')
+      {
+        $("#pricingdivIntl").show();
+        $("#GroupIdSectionIntl").hide();
+      }
+      else
+      {
+        $("#pricingdivIntl").hide();
+        $("#GroupIdSectionIntl").show();
+      }
+    });
+});
+
+</script>
+
+<script>
+    
+        $(function() {
+        enable_cbPA21();
+        $("#optionPA21").click(enable_cbPA21);
+    });
+    function enable_cbPA21() {
+        if (this.checked) { 
+            $("input.optionDNS").prop("disabled", true);  
+            $("input.optionPA19").prop("disabled", true);
+            $("input.optionPA18").prop("disabled", true);
+            $("input.optionLAD").prop("disabled", true);
+            $("input.optionSO").prop("checked", true);
+            //$("input.optionSO").attr("disabled", true);
+        }
+        else{
+            $("input.optionDNS").prop("disabled", false);  
+            $("input.optionPA19").prop("disabled", false);   
+            $("input.optionPA18").prop("disabled", false);
+            $("input.optionLAD").prop("disabled", false);
+            $("input.optionSO").prop("checked", false);
+            //$("input.optionSO").prop("disabled", false);
+        }
+    }
+    
+</script>
+
+  <div id="tabs-1"><div class="tab-description"><h2>🇨🇦 Ship to Canada</h2><p>Use this section to create domestic Canadian shipments, including regular parcels, expedited services, and optional features.</p><hr></div>
+      <form id="CreateShipmentCanada" action="#" method="POST">
+      
+    
+      <div class="pickup-block" style="margin-top:20px;">
+        <h2 style="margin-top:0;">Customer Request ID</h2>
+        <p>This is a unique request id for tracking purpuses.</p>
+        <br />
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="custreq">Customer Request ID</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" name="custreq" id="custreq" readOnly="true" maxlength="30" />
+            </td>
+          </tr>
+        </table>
+        <br />
+      </div>
+
+<p>If your shipments are picked up by Canada Post or a third party, select <strong>Yes</strong>. If you are going to deposit at a post office, select <strong>No</strong>.</p>
+
+      <div class="pickup-block">
+                <div class="pickup-label-row">
+          <span class="pickup-label">Pickup?<span class="required-star"> *</span></span>
+        </div>
+        <div class="pickup-options">
+          <label class="pickup-option" for="pickupquestion-yes">
+            <input
+              class="pickupyes"
+              type="radio"
+              id="pickupquestion-yes"
+              name="pickupquestion"
+              value="yes"
+            />
+            <span>Yes – schedule a pickup</span>
+          </label>
+          <label class="pickup-option" for="pickupquestion-no">
+            <input
+              class="pickupno"
+              type="radio"
+              id="pickupquestion-no"
+              name="pickupquestion"
+              value="no"
+            />
+            <span>No – I will deposit at a post office</span>
+          </label>
+        </div>
+        <p class="pickup-hint">
+          Your choice determines whether the shipment is grouped as <code>PICKUP</code> or <code>DEPOSIT</code>
+          in the <strong>Group ID</strong> field below and which additional details are required.
+        </p>
+      </div>
+
+      <div id="shippingpointsection" class="pickup-section pickup-section--hidden">
+        <p>You chose pickup, so you must provide the postal code of your pickup location.</p>
+        <table class="TableSTyle">
+          <tr>
+            <td>
+              <label for="shippingPoint" class="control-label">
+                Shipping Point<span class="required-star"> *</span>
+              </label>
+              <input
+                type="text"
+                name="shippingPoint"
+                id="shippingPoint"
+                maxlength="6"
+                value="K2K0B1"
+                onblur="UpperCasePostalContractShippingCAN()"
+              />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="pickupsection" class="pickup-section">
+        <p>
+          It looks like you’re going to deposit instead of using a pickup. Please identify the deposit location
+          by providing the <strong>Post Office ID</strong> below. If you’re not sure what that is, use the link
+          to find a deposit location and copy/paste the Post Office ID into the field.
+        </p>
+        <table class="TableStyle">
+          <tr>
+            <td>
+              Click here to
+              <a
+                href="https://www.canadapost-postescanada.ca/information/app/fdl/business/findDepositLocation?execution=e1s1"
+                target="_blank"
+              >
+                Find a Deposit Location
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="postofficeid" class="control-label">
+                Post Office ID<span class="required-star"> *</span>
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="text"
+                name="postofficeid"
+                id="postofficeid"
+                value="3057"
+                maxlength="10"
+              />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br /><br />
+
+</div>
+
+<!-- display div if Agreement is set in session otherwise hide it. -->
+
+<div id="agreement">
+
+  <p>If you are planning on shipping over 50 shipments per day then you should opt to include in Manifest. Failure to comply may result in having your shipments refused by Canada Post. Canada Post requires a manifest for every pickup over 50 shipments, the manifest must be given to the Canada Post representative. If you are not familiar with the Manifest please have a look at our handy <a href="http://www.fabsandbox.com/tutorials">video tutorials section.</a>
+  </p>
+
+  <div class="pickup-block">
+    <h2 style="margin-top:0;">Manifest &amp; Grouping</h2>
+    <div class="pickup-label-row">
+      <span class="pickup-label">Include Shipment in Manifest?<span class="required-star">*</span></span>
+    </div>
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="manifestquestion">
+            <select name="manifestquestion" id="manifestquestion">
+              <option disabled selected value> -- select an option -- </option>
+              <option value="yes" label="YES">YES</option>
+              <option value="no" label="NO"> NO</option>
+            </select>
+          </label>
+        </td>
+      </tr>
+    </table>
+
+    <div id="GroupIdSection" style="display:none;">
+      <p> Its important to understand that if you opted to include shipments to a manifest and transmit at a later time that you will require printing also and provide hardcopy. This field is disabled and will be autopopulated when you select Pickup or Deposit.</p>
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <label for="groupId">Group ID<font color="red">
+              <b> * </b>
+            </font>
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="groupId" name="groupId" id="groupId" readOnly="true" maxlength="32" />
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+  
+</div>
+
+<br />
+
+<br />
+<br />
+<div class="pickup-block" style="margin-top:20px;">
+  <h2 style="margin-top:0;">Promo Code</h2>
+  <p>
+    Promotional discount code. Note that a promotion code is only valid for a certain period and product.
+    Your entry will be converted to uppercase (i.e., you can use lowercase or a mix of lower or upper case
+    and will get the same result).
+  </p>
+  <table class="TableStyle">
+    <tr>
+      <td>
+        <label for="promocode" class="pickup-label">Promo Code</label>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" class="promocode" name="promocode" id="promocode" maxlength="32" />
+      </td>
+    </tr>
+  </table>
+</div>
+  </div>
+  <br />
+
+<!-- here -->
+<div>
+  <p>
+    This is an optional element, used to request the QR code image of the public label in base64 format, along with contains public key label URL, and expiry date. If true, two new links are provided: publicLabel and publicKeyInfo.
+    Note: Only applicable to 8 1/2 X 11 paper encoded in PDF.
+  </p>
+        <div class="pickup-block" style="margin-top:20px;">
+        <h2 style="margin-top:0;">QR Code &amp; Public Key</h2>
+        <p>
+          This is an optional element, used to request the QR code image of the public label in base64 format,
+          along with the public key label URL and expiry date. If set to <strong>Yes</strong>, two new links are
+          provided in the response: <code>publicLabel</code> and <code>publicKeyInfo</code>.
+          <br />
+          <strong>Note:</strong> Only applicable to 8 1/2 x 11 paper encoded in PDF.
+        </p>
+
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="QrCode" class="pickup-label">Do you want to generate a QR Code?</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select name="QrCode" id="QrCode">
+                <option value="false" label="No">No</option>
+                <option value="true" label="Yes">Yes</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+
+        <br />
+
+        
+        <div id="publickeyBlockCAN" style="display:none;">
+<table class="TableStyle">
+          <tr>
+            <td>
+              <label for="publickey" class="pickup-label">Do you want to receive a public key label URL?</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select name="publickey" id="publickey">
+                <option value="false" label="No">No</option>
+                <option value="true" label="Yes">Yes</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+        </div>
+      </div>
+
+<!-- script to popup the public key text input when QR Code is YES-->
+  <script>
+    $(document).ready(function(){
+      function updatePublicKeyVisibility_QrCode() {
+        var val = $('#QrCode').val();
+        if (val === 'true') {
+          $("#publickeyBlockCAN").show();
+        } else {
+          $("#publickeyBlockCAN").hide();
+        }
+      }
+
+      $('#QrCode').on('change', updatePublicKeyVisibility_QrCode);
+      // Apply initial state on load (default is No, so container stays hidden)
+      updatePublicKeyVisibility_QrCode();
+    });
+</script>
+
+<!-- here -->
+</div>
+
+<br /><br />
+
+  <div class="pickup-block">
+    <h2>Payment Information</h2>
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label for="mailedBy" class="control-label"> Mailed By <font color="red">
+            <b> * </b>
+          </font></label>
+        </td>
+        <td>
+          <label for="mobo" class="control-label">Mailed on Behalf of <font color="red">
+            <b> * </b>
+          </font></label>
+        </td>
+        <td>
+          <label for="paidBy" class="control-label">Paid By <font color="red">
+            <b> * </b>
+          </font></label>
+        </td>
+        <td>
+          <label for="agreement" class="control-label">Contract<font color="red">
+            <b> * </b>
+          </font></label>
+        </td>
+        <td>
+          <label for="methodOfPayment" class="control-label">Method of Payment<font color="red">
+            <b> * </b>
+          </font></label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" name="mailedBy" id="mailedBy" value="" readOnly="true" maxlength="10" />
+        </td>
+        <td>
+          <input type="text" name="mobo" id="mobo" value="" readOnly="true" maxlength="10" />
+        </td>
+        <td>
+          <input type="text" name="paidBy" id="paidBy" value="" readOnly="true" maxlength="10" />
+        </td>
+        <td>
+          <input type="text" name="agreement" id="agreement" value="" readOnly="true" maxlength="10" />
+        </td>
+        <td>
+          <!-- script to popup the want a receipt when credit card is picked-->
+          <script>
+            $(document).ready(function(){
+              $('#methodOfPayment').on('change', function() {
+                if ( this.value == 'CreditCard') {
+                  $("#receipt").show();
+                } else {
+                  $("#receipt").hide();
+                }
+              });
+            });
+          </script>
+          <select name="methodOfPayment" id="methodOfPayment">
+            <option value="Account" label="Account">Account</option>
+            <option value="CreditCard" label="CreditCard">Credit Card</option>
+            <option value="SupplierAccount" label="SupplierAccount">Supplier Account</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    <br />
+    <div style="display: flex; justify-content: space-around float: right">
+      <div id='pricingdiv' style='display:none'>
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="GetPricing">Do you want pricing returned in the answer?</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <center>
+                <select name="GetPricing" id="GetPricing">
+                  <option value="false" label="No">No</option>
+                  <option value="true" label="Yes">Yes</option>
+                </select>
+              </center>
+            </td>
+          </tr>
+        </table>
+        <br /><br /><br />
+      </div>
+      <br />
+      <div style='display:none;' id='receipt' float: right>
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="receipt">Do you Want a Receipt?</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <center>
+                <select name="GetReceipt" id="GetReceipt">
+                  <option value="false" label="No">No</option>
+                  <option value="true" label="Yes">Yes</option>
+                </select>
+              </center>
+            </td>
+          </tr>
+        </table>
+        <br /><br /><br />
+      </div>
+    </div>
+  </div>
+
+  <br />
+  
+    <div class="pickup-block">
+      <h2>Continuous Inbound Freight</h2>
+      <p>
+        If you have shipments that originate outside of Canada, but are being delivered directly to a Canada Post plant, use this element to identify these shipments as continuous inbound freight (CIF). This option allows you to be eligible for Canadian sales tax exemptions.
+        You will need to provide Canada Post with documentation that shows proof of origin, such as a Canadian customs document or bill of lading.
+      </p>
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <select name="CIF" id="CIF">
+              <option value="false" label="No">No</option>
+              <option value="true" label="Yes">Yes</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+  
+  <br /><br /><br />
+  
+    <div class="pickup-block">
+      <p>Shipments are priced as per the current shipment date and are re-priced at time of transmit if transmitted at a later date.</p>
+      <table class="TableSTyle">
+        <tr>
+          <td>
+            <label>Expected Mailing Date:</label>
+            <input id="datepicker" type="text" name="mailingdate" enabled />
+            <br /><br />
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+  
+  <br />
+  <div class="ui-widget-content">
+    <div class="pickup-block">
+      <h2>Sender Information</h2>
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <label for="senderCompany" class="control-label">Company<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="contactPhone" class="control-label">Contact Phone<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="contactName" class="control-label">Contact Name</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="senderCompany" id="senderCompany" maxlength="44" value="" />
+          </td>
+          <td>
+            <input type="text" name="contactPhone" id="contactPhone" maxlength="25" value=""/>
+          </td>
+          <td>
+            <input type="text" name="contactName" id="contactName" maxlength="44" value="" />
+          </td>
+        </tr>
+      </table>
+      <br />
+      <table class="TableStyle">
+        <tr>
+          <td>
+            <label for="customerAddressLine1" class="control-label">Address (Line 1)<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="customerAddressLine1"> Address (Line 2)</label>
+          </td>
+          <td>
+            <label for="customerCity" class="control-label">City<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="provstate" class="control-label">Province<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="customerPostalCode" class="control-label">Postal Code<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="customerAddressLine1" id="customerAddressLine1" maxlength="44" value="" />
+          </td>
+          <td>
+            <input type="text" name="customerAddressLine2" id="customerAddressLine2" maxlength="44" value="" />
+          </td>
+          <td>
+            <input type="text" name="customerCity" id="customerCity" maxlength="40" value="" />
+          </td>
+          <td>
+            <input type="hidden" class="target" value="" />
+            <select name="provstate" id="provstate">
+              <option value="" label=" -- Choose One --"> -- Choose One --</option>
+              <option value="AB">Alberta</option>
+              <option value="BC">British Columbia</option>
+              <option value="MB">Manitoba</option>
+              <option value="NB">New Brunswick</option>
+              <option value="NL">Newfoundland and Labrador</option>
+              <option value="NS">Nova Scotia</option>
+              <option value="NT">Northwest Territories</option>
+              <option value="NU">Nunavut</option>
+              <option value="ON">Ontario</option>
+              <option value="PE">Prince Edward Island</option>
+              <option value="QC">Québec</option>
+              <option value="SK">Saskatchewan</option>
+              <option value="YT">Yukon</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="customerPostalCode" id="customerPostalCode" maxlength="6" value="" onblur="UpperCasePostalContractShippingCAN()" />
+          </td>
+        </tr>
+      </table>
+      <br /><br />
+    </div>
+  </div>
+<br />
+<div class="ui-widget-content"><div class="pickup-block">
+  <br />
+  <h2>Recipient Information</h2>
+  <br />
+  <table class="TableStyle">
+    <tr>
+      <td>
+                            Print QuickShip label?
+                            <br />
+                            Note : This will only print a barcode
+                        </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="QuickShipquestion">
+          <input class="QuickShipyes" type="radio" id="QuickShipquestion" name="QuickShipquestion" value="yes" />Yes</label>
+          <label>
+            <input class="QuickShipno" type="radio" id="QuickShipquestion" name="QuickShipquestion" checked value="no" checked />No</label>
+          </td>
+        </tr>
+      </table>
+      <br />
+      <div id="destinationinfo">
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="recipientCompany">Company</label>
+            </td>
+            <td>
+              <label for="recipientName">Name</label>
+            </td>
+            <td>
+              <label for="recipientPhone">Phone Number :</label>
+            </td>
+            <td>
+              <label for="additionalAddressInfo">Additional Address Info</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" name="recipientCompany" id="recipientCompany" maxlength="44" />
+            </td>
+            <td>
+              <input type="text" class="recipientName" name="recipientName" id="recipientName" maxlength="44" />
+            </td>
+            <td>
+              <input type="text" class="recipientPhone" name="recipientPhone" id="recipientPhone" maxlength="25" />
+            </td>
+            <td>
+              <input type="text" name="additionalAddressInfo" id="additionalAddressInfo" maxlength="50" />
+            </td>
+          </tr>
+        </table>
+        <br />
+        <table class="TableStyle">
+          <tr>
+            <td>
+              <label for="recipientAddressLine1" class="control-label">Address (Line 1)<font color="red">
+                <b> * </b>
+              </font>
+            </label>
+          </td>
+          <td>
+            <label>Address (Line 2)</label>
+          </td>
+          <td>
+            <label for="recipientCity" class="control-label">City<font color="red">
+              <b> * </b>
+            </font>
+          </label>
+        </td>
+        <td>
+          <label for="recipientProvince" class="control-label">Province<font color="red">
+            <b> * </b>
+          </font>
+        </label>
+      </td>
+    </tr>
+    <td>
+      <input type="text" name="recipientAddressLine1" id="recipientAddressLine1" maxlength="44" />
+    </td>
+    <td>
+      <input type="text" name="recipientAddressLine2" id="recipientAddressLine2" maxlength="44" />
+    </td>
+    <td>
+      <input type="text" name="recipientCity" id="recipientCity" maxlength="44" />
+    </td>
+    <td>
+      <select name="recipientProvince" id="recipientProvince">
+        <option value="" label=" -- Choose One --"> -- Choose One --</option>
+        <option value="AB" label="Alberta">Alberta</option>
+        <option value="BC" label="British Columbia">British Columbia</option>
+        <option value="MB" label="Manitoba">Manitoba</option>
+        <option value="NB" label="New Brunswick">New Brunswick</option>
+        <option value="NL" label="Newfoundland and Labrador">Newfoundland and Labrador</option>
+        <option value="NS" label="Nova Scotia">Nova Scotia</option>
+        <option value="NT" label="Northwest Territories">Northwest Territories</option>
+        <option value="NU" label="Nunavut">Nunavut</option>
+        <option value="ON" label="Ontario">Ontario</option>
+        <option value="PE" label="Prince Edward Island">Prince Edward Island</option>
+        <option value="QC" label="Québec">Québec</option>
+        <option value="SK" label="Saskatchewan">Saskatchewan</option>
+        <option value="YT" label="Yukon">Yukon</option>
+      </select>
+    </td>
+  </tr>
+</table>
+
+<table class="TableStyle">
+  <tr>
+    <td>
+      <label for="recipientPostalCode" class="control-label">Postal Code<font color="red">
+        <b> * </b>
+      </font>
+    </label>
+  </td>
+</tr>
+<tr>
+  <td>
+    <input type="text" name="recipientPostalCode" id="recipientPostalCode" maxlength="6" onblur="UpperCasePostalContractShippingCAN()" />
+  </td>
+</tr>
+</table></div></div>
+<br />
+<br />
+</div>
+<br />
+<div class="ui-widget-content">
+  <div class="pickup-block">
+    <h2>Return Address</h2>
+    Create Return Shipping Label? You will only be charged if used by the recipient.
+    <table class="TableStyle">
+      <tr>
+        <td>
+          <label>
+            <input class="returnyes" type="radio" name="returnadd" value="yes" checked="checked"/>Yes</label>
+          <label>
+            <input class="returnno" type="radio" name="returnadd" value="no" />No</label>
+        </td>
+      </tr>
+    </table>
+    <br /><br />
+    <div id="returnsection">
+      <br />
+      <table class="TableStyle">
+        <tr>
+          <td>
+            Return Service<font color="red">
+              <b> * </b>
+            </font>
+          </td>
+          <td>
+            Company
+          </td>
+          <td>
+            Name
+          </td>
+          <td>
+            <label for="returnAddressLine1" class="control-label">Address (Line 1)<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <select name="returnService" id="returnService" class="control-label">
+              <option value="" label="--Choose one--">--Choose one--</option>
+              <option value="DOM.PC" label="Priority">Priority</option>
+              <option value="DOM.XP" label="Xpost">Xpost</option>
+              <option value="DOM.RP" label="Regular">Regular</option>
+              <option value="DOM.EP" label="Expedited">Expedited</option>
+              <option value="DOM.LIB" label="Library Books">Library Books</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="returnCompany" id="returnCompany" value="" maxlength="44" />
+          </td>
+          <td>
+            <input type="text" name="returnName" id="returnName" value="" />
+          </td>
+          <td>
+            <input type="text" name="returnAddressLine1" id="returnAddressLine1" value="" />
+          </td>
+        </tr>
+      </table>
+      <br />
+      <table class="TableStyle">
+        <tr>
+          <td>
+            Address (Line 2)
+          </td>
+          <td>
+            <label for="returnCity" class="control-label">City<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="returnProvince" class="control-label"> Province<font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="returnPostalCode" class="control-label">Postal Code <font color="red">
+              <b> * </b>
+            </font></label>
+          </td>
+          <td>
+            <label for="returnemailnotification" class="control-label">E-mail Address</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" name="returnAddressLine2" id="returnAddressLine2" value="" />
+          </td>
+          <td>
+            <input type="text" name="returnCity" id="returnCity" value="" />
+          </td>
+          <td>
+            <input type="hidden" class="target" value="" />
+            <select name="returnProvince" id="returnProvince">
+              <option value="" label=" -- Choose One --"> -- Choose One --</option>
+              <option value="BC">British Columbia</option>
+              <option value="MB">Manitoba</option>
+              <option value="NB">New Brunswick</option>
+              <option value="NL">Newfoundland and Labrador</option>
+              <option value="NS">Nova Scotia</option>
+              <option value="NT">Northwest Territories</option>
+              <option value="NU">Nunavut</option>
+              <option value="ON">Ontario</option>
+              <option value="PE">Prince Edward Island</option>
+              <option value="QC">Québec</option>
+              <option value="SK">Saskatchewan</option>
+              <option value="YT">Yukon</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="returnPostalCode" id="returnPostalCode" maxlength="6" value="" onblur="UpperCasePostalContractShippingCAN()" />
+            <br />
+          </td>
+          <td>
+            <input type="text" name="returnemailnotification" id="returnemailnotification" value="" />
+          </td>
+        </tr>
+      </table>
+      <br />
+    </div>
+  </div>
+<script>
+  $(document).ready(function() {
+    function toggleReturnSection() {
+      var val = $('input[name="returnadd"]:checked').val();
+      if (val === 'yes') {
+        $('#returnsection').show();
+      } else {
+        $('#returnsection').hide();
+      }
+    }
+    toggleReturnSection();
+    $('input[name="returnadd"]').on('change', toggleReturnSection);
+  });
+</script>
+</div>
+<br />
+<div class="ui-widget-content">
+  <div class="pickup-block">
+    <h2>Shipment Options &amp; Extras</h2>
+    <p>Use this section to choose service type, extra delivery options, parcel weight and dimensions, and Collect On Delivery when applicable.</p>
+
+  <div class="shipment-options-layout">
+    <div class="shipment-options-top">
+      <table class="TableStyle">
+                                      <tr>
+                                        <td>
+                                          <label for="serviceTypezzz">Service Type<font color="red">
+                                            <b> * </b>
+                                          </font>
+                                        </label>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <select name="serviceType" id="serviceType">
+                                          <option value="" label="-- Choose One --"> -- Choose One --</option>
+                                          <option value="DOM.RP" label="Regular">Regular</option>
+                                          <option value="DOM.XP" label="Xpost">Xpost</option>
+                                          <option value="DOM.EP" label="Expedited">Expedited</option>
+                                          <option value="DOM.PC" label="priority">Priority</option>
+                                          <option value="DOM.LIB" label="Library Books">Library Books</option>
+                                        </select>
+                                      </td>
+                                    </tr>
+                                  </table>
+    </div>
+    <div class="shipment-options-main">
+      <div class="shipment-options-col shipment-options-col-left">
+        <table class="TableStyle">
+              <tr>
+                <td>Standard Options</td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="checkbox" name="optionfake" value="DC" disabled="disabled" checked /> Delivery Confirmation
+                                        <input type="hidden" name="optionDC" value="DC" checked />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="optionD2POzzzzz">
+                  <input class="optionD2POzzzz" type="checkbox" id="optionD2PO" name="optionD2PO" value="D2PO" onClick="if(this.checked) {window.open('https://fabsandbox.com/GetNearestPostOffice/d2popopup.php','','width=700,height=400,left=100, scrollbars=yes,top=100,screenX=100,screenY=100');}" />Deliver to post office</label>
+          
+        <!-- SCRIPT TO MAKE EMAIL MANDATORY IF D2PO IS SELECTED -->
+          
+        <script>
+        $('#optionD2PO').change(function () {
+            if(this.checked) {
+                $('#eNoticeEmail').prop('required', true);
+            } else {
+                $('#eNoticeEmail').prop('required', false);
+            }
+        });
+        </script>
+
+                </td>
+              </tr>
+                <tr>
+                  <td>
+                    <label for="optionDNS">
+                      <input type="checkbox" class="optionDNS" id="optionDNS" name="optionDNS" value="DNS" />Do not safe drop</label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label for="optionPA18">
+                        <input class="optionPA18" type="checkbox" name="optionPA18" id="optionPA18" value="PA18" />Proof of Age Required - 18</label>
+                        <br />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <label for="optionPA19">
+                          <input class="optionPA19" type="checkbox" name="optionPA19" id="optionPA19" value="PA19" />Proof of Age Required - 19</label>
+                        </td>
+                      </tr>
+                                  <tr>
+                      <td>
+                        <label for="optionPA21">
+                          <input class="optionPA21" type="checkbox" name="optionPA21" id="optionPA21" value="PA21" />Proof of Age Required - 21</label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <label for="optionHFP">
+                            <input class="optionHFP" id="optionHFP" type="checkbox" name="optionHFP" value="HFP" />Card for pickup</label>
+                            <br />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label for="optionLAD">
+                              <input class="optionLAD" id="optionLAD" type="checkbox" name="optionLAD" value="LAD" enabled />Leave at door - do not card</label>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <label for="optionD2D">
+                                <input type="checkbox" class="optionD2D" id="optionD2D" name="optionD2D" value="D2D" enabled />Delivery to Door</label>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <label for="optionD2PB">
+                                  <input type="checkbox" id="optionD2PB" class="optionD2PB" name="optionD2PB" value="D2PB" disabled />Deliver to Parcel Box</label>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <input type="checkbox" name="optionPOID" value="POID" enabled />Proof of Identity                                          
+                                    </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <input type="checkbox" name="unpackaged" id="unpackaged" value="true" />
+                                        unpackaged     
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                      <input type="checkbox" name="oversized" id="oversized" value="true" />
+                                        oversized
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <input type="checkbox" name="mailingtube" id="mailingtube" value="true" />
+                                        mailingtube
+                                    </td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <label for="optionSO">
+                                            <input type="checkbox" class="optionSO" id="optionSO" name="optionSO" value="SO" />Signature On Delivery?</label>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>
+                                            <input type="checkbox" name="optionCOV" id="optionCOV" value="COV" /> Insurance
+                                        <input align="right" type="text" name="COVamount" id="COVamount" />
+                                            <br />
+                                          </td>
+                                        </tr>
+                                      </table>
+      </div>
+      <div class="shipment-options-col shipment-options-col-right">
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                                    <table class="TableStyle">
+                                      <tr>
+                                        <td>
+                                          <label for="weight">Weight (Kg)<font color="red">
+                                            <b> *</b>
+                                          </font>
+                                        </label>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <input type="text" name="weight" id="weight" />
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  <br /><br /><br />
+                                  <table class="TableStyle">
+                                    <tr>
+                                      <td>       
+                                        Include dimension? (CM)
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <label>
+                                          <input class="dimensionno" type="radio" name="dimension" value="no"  />No</label>
+                                          <label>
+                                            <input class="dimensionyes" type="radio" name="dimension" value="yes" checked="checked" />Yes</label>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                      <br />
+                                      <div id="dimension">
+                                        <div id="dimensionContainer">
+<table class="TableStyle">
+                                          <tr>
+                                            <td>
+                                              <label for="length">Length:<font color="red">
+                                                <b> * </b>
+                                              </font>
+                                            </label>
+                                          </td>
+                                          <td>
+                                            <label for="width">Width:<font color="red">
+                                              <b> * </b>
+                                            </font>
+                                          </label>
+                                        </td>
+                                        <td>
+                                          <label for="height">Height:<font color="red">
+                                            <b> * </b>
+                                          </font>
+                                        </label>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <input type="text" id="length" name="length" onblur="CheckGirth()" />
+                                      </td>
+                                      <td>
+                                        <input type="text" id="width" name="width" onblur="CheckGirth()" />
+                                      </td>
+                                      <td>
+                                        <input type="text" id="height" name="height" onblur="CheckGirth(); VolumetricWeight()" />
+                                      </td>
+                                    </tr>
+                                  </table>
+</div>
+                                  <br />
+        <table class="TableStyle">
+                                    <tr>
+                                      <td align="left">
+                                        <label for="optionCOD">
+                                          <input type="checkbox" class="optionCOD" id="optionCOD" name="optionCOD" value="COD" id="optionCOD" value="0" />Collect On Delivery?</label>
+                                          <input align="right" type="text" name="CODamount" id="CODamount" maxlength="9"/>
+                                          <br /><br />
+                                        </td>
+                                      </tr>
+                                    </table>
+                                    <br />
+        <div id="CODSection" style="display:none">
+                                      <table class="TableStyle">
+                                        <tr>
+                                          <td align="left">
+                                            COD amount included in shipping cost? 
+                                            <input class="optiontyes" type="radio" name="optionqualifier1COD" value="true" checked="checked"/>Yes            
+                                            <input class="optionno" type="radio" name="optionqualifier1COD" value="false" />No<br />
+                                        </td>
+                                    <!--   </tr>
+                                      <tr>
+                                       <td align="left">
+                                            Method of payment accepted for COD?
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align="left">
+                                          <select name="optionqualifier2COD" id="optionqualifier2COD" onChange="CHKCODAmount();">
+                                            <option value="" select="selected">Pick Method of Collection</option>
+                                            <option value="CSH">Cash</option>
+                                            <option value="CHQ">Cheque</option>
+                                            <option value="MOCC">Money Order / Certified Cheque</option>
+                                          </select>
+                                          <br /><br />
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align="left">
+                                            Information found on the Collect On Delivery label
+                                            <br />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td align="right">
+                                        <label>Name: <input type="text" name="CODname" maxlength="44" />
+                                      </label>
+                                      <br />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td align="right">
+                                      <label>Company Name: <font color="red">
+                                        <b> * </b>
+                                      </font>
+                                      <input type="text" name="CODCompany" id="CODCompany" maxlength="44"/>
+                                    </label>
+                                    <br />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td align="right">
+                                    <label>Address Line 1: <font color="red">
+                                      <b> * </b>
+                                    </font>
+                                    <input type="text" name="CODAddressLine1" id="CODAddressLine1" maxlength="44"/>
+                                  </label>
+                                  <br />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align="right">
+                                  <label>Address Line 2: <input type="text" name="CODAddressLine2" maxlength="44"/>
+                                </label>
+                                <br />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td align="right">
+                                <label>City: <font color="red">
+                                  <b> * </b>
+                                </font>
+                                <input type="text" name="CODCity" id="CODCity" maxlength="40"/>
+                              </label>
+                              <br />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">
+                                            Province: <font color="red">
+                              <b> * </b>
+                            </font>
+                            <select name="CODProvince" id="CODProvince">
+                              <option value="" label=" -- Choose One --"> -- Choose One --</option>
+                              <option value="AB" label="Alberta">Alberta</option>
+                              <option value="BC" label="British Columbia">British Columbia</option>
+                              <option value="MB" label="Manitoba">Manitoba</option>
+                              <option value="NB" label="New Brunswick">New Brunswick</option>
+                              <option value="NL" label="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                              <option value="NS" label="Nova Scotia">Nova Scotia</option>
+                              <option value="NT" label="Northwest Territories">Northwest Territories</option>
+                              <option value="NU" label="Nunavut">Nunavut</option>
+                              <option value="ON" label="Ontario">Ontario</option>
+                              <option value="PE" label="Prince Edward Island">Prince Edward Island</option>
+                              <option value="QC" label="Qu bec">Québec</option>
+                              <option value="SK" label="Saskatchewan">Saskatchewan</option>
+                              <option value="YT" label="Yukon">Yukon</option>
+                            </select>
+                            <br /><br />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="right">
+                            <label>Postal Code: <font color="red">
+                              <b> * </b>
+                            </font>
+                            <input type="text" name="CODPostalCode" id="CODPostalCode" maxlength="6" onblur="UpperCasePostalContractShippingCAN()" />
+                          </label>
+                          <br />
+                        </td>
+                      </tr>  -->
+                    </table>
+                  </div>
+      </div>
+    </div>
+    </div>
+</div>
+        </div>
+        <br />
+        <div class="ui-widget-content">
+          <div class="pickup-block"><h2>Print Preferences </h2>
+          <table class="TableStyle">
+            <tr>
+              <td>
+                            Output Format <span>*</span>
+            </td>
+            <td>
+                            Output Type<font color="red">
+              <b> * </b>
+            </font>
+          </td>
+          <td>
+                            Show Packing Instructions<font color="red">
+            <b> * </b>
+          </font>
+        </td>
+  <!--      <td>
+                            Show Postage Rate<font color="red">
+          <b> * </b>
+        </font>
+      </td>
+      <td>
+                            Show Insured Value<font color="red">
+        <b> * </b>
+      </font>
+    </td> -->
+  </tr>
+  <tr>
+    <td>
+      <select name="outputFormat" id="outputFormat">
+        <option value="8.5x11" label="8.5x11">8.5x11</option>
+        <option value="4x6" label="4x6">4x6</option>
+      </select>
+    </td>
+    <td>
+      <select name="encoding" id="encoding">
+        <option value="PDF" label="PDF">PDF</option>
+        <option value="ZPL" label="ZPL">ZPL</option>
+      </select>
+    </td>
+    <td>
+      <select name="showPackingInstructions" id="showPackingInstructions">
+        <option value="false" label="No">No</option>
+        <option value="true" label="Yes">Yes</option>
+      </select>
+    </td>
+<!--    <td>
+      <select name="showPostageRate" id="showPostageRate">
+        <option value="false" label="No">No</option>
+        <option value="true" label="Yes">Yes</option>
+      </select>
+    </td> 
+    <td>
+      <select name="showInsuredValue" id="showInsuredValue">
+        <option value="false" label="No">No</option>
+        <option value="true" label="Yes">Yes</option>
+      </select>
+    </td> -->
+  </tr>
+</table>
+</div><br />
+</div>
+<br />
+<div class="ui-widget-content">
+  <div class="pickup-block"><h2>Tracking Options</h2>
+  <table class="TableStyle">
+    <tr>
+      <td>
+        <label for="costcenter" id="label-costcenter">costcenter</label>
+      </td>
+      <td>
+        <label for="customerref1" id="label-customerref1">Cost customerref1</label>
+      </td>
+      <td>
+        <label for="customerref2" id="label-customerref2">customerref2</label>
+      </td>
+    </tr>
+    <td>
+      <input type="text" name="costcenter" id="costcenter" maxlength="35" />
+    </td>
+    <td>
+      <input type="text" name="customerref1" id="customerref1" maxlength="30" />
+    </td>
+    <td>
+      <input type="text" name="customerref2" id="customerref2" maxlength="35" />
+    </td>
+  </tr>
+</table>
+</div><br />
+
+<div class="pickup-block"><h2>Electronic Delivery Updates</h2>
+                This option allows you to request emails to be sent when your item is shipped, delivered, signature obtained or unforeseen delivery interruptions occur.
+                This option is available for services with delivery confirmation (barcoded) only.
+                <br />
+<table class="TableStyle">
+  <tr>
+    <td>
+      Email address that will receive notification when the shipment order is created and the item is provided to Canada Post for delivery.<font color="red">
+      <b> * </b>
+      </font>
+    </td>
+    <td>
+      <label for="eNoticeException" id="label-eNoticeException">Exception
+      Email notification when any unforeseen delivery interruptions occur..</label>
+    </td>
+    <td>
+      <label for="eNoticeDelivery" class="eNoticeDelivery" id="eNoticeDelivery">Delivery
+      Email notification when a Delivery Notice Card notifying the recipient to pick the item up at a local post office is delivered.</label>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="text" name="eNoticeEmail" id="eNoticeEmail" maxlength="60" />
+      <input type="hidden" name="eNoticeShip" value="false" />
+      <input type="checkbox" name="eNoticeShip" id="eNoticeShip" value="true" checked />
+    </td>
+    <td>
+      <input type="hidden" name="eNoticeException" value="false" />
+      <input type="checkbox" name="eNoticeException" id="eNoticeException" value="true" checked />
+    </td>
+    <td>
+      <input type="hidden" name="eNoticeDelivery" value="false" />
+      <input type="checkbox" class="eNoticeDelivery" name="eNoticeDelivery" id="eNoticeDelivery" value="true" checked />
+    </td>
+  </tr>
+</table>
+
+</div><br />
+</div>
+<br />
+<div class="form-footer-actions">
+  <input type="submit" id="submitButton" name="submitButton" value="Create Shipment" />
+  <button type="button" onclick="window.location.href = '../index.html';">Go to main Screen</button>
+</div>
+</form>
+</div>
+  <!---INTERNATIONAL FORM END ------>
+</div>
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+  $(document).ready(function() {
+    function toggleCODSection() {
+      if ($('#optionCOD').is(':checked')) {
+        $('#CODSection').show();
+      } else {
+        $('#CODSection').hide();
+      }
+    }
+    toggleCODSection();
+    $('#optionCOD').on('change', toggleCODSection);
+  });
+</script>
+<script>
+  $(document).ready(function() {
+    function updateDimensionVisibility() {
+      var val = $('input[name="dimension"]:checked').val();
+      if (val === 'yes') {
+        $('#dimensionContainer').show();
+      } else {
+        $('#dimensionContainer').hide();
+      }
+    }
+
+    // Apply on load
+    updateDimensionVisibility();
+
+    // React to changes
+    $('input[name="dimension"]').on('change', updateDimensionVisibility);
+  });
+</script>
+
+
+<script>
+  // Utility to safely XML-escape text content
+  function cpEscapeXml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  }
+
+  async function cpCreateShipmentFromForm(event) {
+    if (event) event.preventDefault();
+
+    const form = document.getElementById("CreateShipmentCanada");
+    if (!form) {
+      alert("CreateShipmentCanada form not found.");
+      return;
+    }
+
+    const fd = new FormData(form);
+    const get = (name) => {
+      const v = fd.get(name);
+      return v == null ? "" : String(v).trim();
+    };
+
+    // --- Credentials from profile (set on main index page) ---
+    // --- Credentials from profile / header strip ---
+    const headerUserInput = document.getElementById("apiUsername");
+    const headerPassInput = document.getElementById("apiPassword");
+
+    let username = headerUserInput ? headerUserInput.value.trim() : "";
+    let password = headerPassInput ? headerPassInput.value.trim() : "";
+
+    // Fallback to sessionStorage if header inputs are empty
+    if (!username || !password) {
+        const storedUser = sessionStorage.getItem("apiUsername") || "";
+        const storedPass = sessionStorage.getItem("apiPassword") || "";
+        if (!username) username = storedUser;
+        if (!password) password = storedPass;
+    }
+
+    if (!username || !password) {
+      alert("API username/password are missing. Please load your profile on the main screen first.");
+      return;
+    }
+
+    // --- Basic path parameters ---
+    const mailedBy = get("mailedBy");
+    const mobo     = get("mobo");
+
+    if (!mailedBy || !mobo) {
+      alert("Mailed By / Mailed on Behalf of are missing. Please verify your Canada Post shipping profile.");
+      return;
+    }
+
+    // For now we call the standard Canada Post REST sandbox URL.
+    // TODO: make this configurable from the profile if you want to hit PROD or a different endpoint.
+    const baseUrl   = "https://ct.soa-gw.canadapost.ca";
+    const serviceUrl = baseUrl + "/rs/" + encodeURIComponent(mailedBy) + "/" + encodeURIComponent(mobo) + "/shipment";
+
+    // --- Build XML body (simplified but aligned with your PHP CreateShipmentCanada.php) ---
+    const custreq        = get("custreq");
+    const manifestChoice = get("manifestquestion");
+    const groupId        = get("groupId");
+    const quickShip      = get("QuickShipquestion");
+    const pickupChoice   = get("pickupquestion");
+    const shippingPoint  = get("shippingPoint");
+    const postofficeid   = get("postofficeid");
+    const mailingdate    = get("mailingdate");
+    const agreement      = get("agreement");
+    const QrCode         = get("QrCode");
+    const publickey      = get("publickey");
+
+    const serviceType    = get("serviceType");
+    const weight         = get("weight");
+    const dimensionFlag  = get("dimension");
+    const length         = get("length");
+    const width          = get("width");
+    const height         = get("height");
+
+    // Sender fields
+    const senderCompany        = get("senderCompany");
+    const contactPhone         = get("contactPhone");
+    const contactName          = get("contactName");
+    const customerAddressLine1 = get("customerAddressLine1");
+    const customerAddressLine2 = get("customerAddressLine2");
+    const customerCity         = get("customerCity");
+    const provstate            = get("provstate");
+    const customerPostalCode   = get("customerPostalCode");
+
+    // Recipient fields
+    const recipientName          = get("recipientName");
+    const recipientCompany       = get("recipientCompany");
+    const recipientPhone         = get("recipientPhone");
+    const recipientAddressLine1  = get("recipientAddressLine1");
+    const recipientAddressLine2  = get("recipientAddressLine2");
+    const recipientCity          = get("recipientCity");
+    const recipientProvince      = get("recipientProvince");
+    const recipientPostalCode    = get("recipientPostalCode");
+
+    let xmlParts = [];
+    xmlParts.push('<shipment xmlns="http://www.canadapost.ca/ws/shipment-v8">');
+
+    if (QrCode === "true") {
+      xmlParts.push("<create-qr-code>true</create-qr-code>");
+    }
+    if (publickey === "true") {
+      xmlParts.push("<create-public-key>true</create-public-key>");
+    }
+
+    if (custreq) {
+      xmlParts.push("<customer-request-id>" + cpEscapeXml(custreq) + "</customer-request-id>");
+    }
+
+    if (manifestChoice === "yes" && groupId) {
+      xmlParts.push("<group-id>" + cpEscapeXml(groupId) + "</group-id>");
+    }
+
+    if (quickShip === "yes") {
+      xmlParts.push("<quickship-label-requested>true</quickship-label-requested>");
+    }
+
+    if (manifestChoice === "no" || !agreement) {
+      xmlParts.push("<transmit-shipment>true</transmit-shipment>");
+    }
+
+    if (pickupChoice === "yes") {
+      if (shippingPoint) {
+        xmlParts.push("<requested-shipping-point>" + cpEscapeXml(shippingPoint) + "</requested-shipping-point>");
+      }
+      xmlParts.push("<cpc-pickup-indicator>true</cpc-pickup-indicator>");
+    } else if (pickupChoice === "no") {
+      if (postofficeid) {
+        xmlParts.push("<shipping-point-id>" + cpEscapeXml(postofficeid) + "</shipping-point-id>");
+      }
+    }
+
+    if (mailingdate) {
+      xmlParts.push("<expected-mailing-date>" + cpEscapeXml(mailingdate) + "</expected-mailing-date>");
+    }
+
+    // TODO: provide-pricing-info / provide-receipt-info if you want to mirror PHP flags exactly.
+
+    // --- delivery-spec ---
+    xmlParts.push("<delivery-spec>");
+    if (serviceType) {
+      xmlParts.push("<service-code>" + cpEscapeXml(serviceType) + "</service-code>");
+    }
+
+    // Sender
+    xmlParts.push("<sender>");
+    if (contactName) {
+      xmlParts.push("<name>" + cpEscapeXml(contactName) + "</name>");
+    }
+    if (senderCompany) {
+      xmlParts.push("<company>" + cpEscapeXml(senderCompany) + "</company>");
+    }
+    if (contactPhone) {
+      xmlParts.push("<contact-phone>" + cpEscapeXml(contactPhone) + "</contact-phone>");
+    }
+    xmlParts.push("<address-details>");
+    if (customerAddressLine1) {
+      xmlParts.push("<address-line-1>" + cpEscapeXml(customerAddressLine1) + "</address-line-1>");
+    }
+    if (customerAddressLine2) {
+      xmlParts.push("<address-line-2>" + cpEscapeXml(customerAddressLine2) + "</address-line-2>");
+    }
+    if (customerCity) {
+      xmlParts.push("<city>" + cpEscapeXml(customerCity) + "</city>");
+    }
+    if (provstate) {
+      xmlParts.push("<prov-state>" + cpEscapeXml(provstate) + "</prov-state>");
+    }
+    xmlParts.push("<country-code>CA</country-code>");
+    if (customerPostalCode) {
+      xmlParts.push("<postal-zip-code>" + cpEscapeXml(customerPostalCode) + "</postal-zip-code>");
+    }
+    xmlParts.push("</address-details>");
+    xmlParts.push("</sender>");
+
+    // Destination
+    xmlParts.push("<destination>");
+    if (recipientName) {
+      xmlParts.push("<name>" + cpEscapeXml(recipientName) + "</name>");
+    }
+    if (recipientCompany) {
+      xmlParts.push("<company>" + cpEscapeXml(recipientCompany) + "</company>");
+    }
+    if (recipientPhone) {
+      xmlParts.push("<client-voice-number>" + cpEscapeXml(recipientPhone) + "</client-voice-number>");
+    }
+    xmlParts.push("<address-details>");
+    if (recipientAddressLine1) {
+      xmlParts.push("<address-line-1>" + cpEscapeXml(recipientAddressLine1) + "</address-line-1>");
+    }
+    if (recipientAddressLine2) {
+      xmlParts.push("<address-line-2>" + cpEscapeXml(recipientAddressLine2) + "</address-line-2>");
+    }
+    if (recipientCity) {
+      xmlParts.push("<city>" + cpEscapeXml(recipientCity) + "</city>");
+    }
+    if (recipientProvince) {
+      xmlParts.push("<prov-state>" + cpEscapeXml(recipientProvince) + "</prov-state>");
+    }
+    xmlParts.push("<country-code>CA</country-code>");
+    if (recipientPostalCode) {
+      xmlParts.push("<postal-zip-code>" + cpEscapeXml(recipientPostalCode) + "</postal-zip-code>");
+    }
+    xmlParts.push("</address-details>");
+    xmlParts.push("</destination>");
+
+    // Parcel characteristics
+    if (weight) {
+      xmlParts.push("<parcel-characteristics>");
+      xmlParts.push("<weight>" + cpEscapeXml(weight) + "</weight>");
+      if (dimensionFlag === "yes") {
+        if (length || width || height) {
+          xmlParts.push("<dimensions>");
+          if (length) xmlParts.push("<length>" + cpEscapeXml(length) + "</length>");
+          if (width)  xmlParts.push("<width>"  + cpEscapeXml(width)  + "</width>");
+          if (height) xmlParts.push("<height>" + cpEscapeXml(height) + "</height>");
+          xmlParts.push("</dimensions>");
+        }
+      }
+      xmlParts.push("</parcel-characteristics>");
+    }
+
+    // TODO: options (DC, SO, LAD, HFP, COD, etc.), notifications, and return-spec can be ported next.
+
+    xmlParts.push("</delivery-spec>");
+    xmlParts.push("</shipment>");
+
+    const xmlBody = xmlParts.join("");
+
+    console.log("Canada Post CreateShipment request XML:", xmlBody);
+
+    // --- Call Canada Post API using fetch ---
+    const authHeader = "Basic " + btoa(username + ":" + password);
+
+    try {
+      const response = await fetch(serviceUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": authHeader,
+          "Content-Type": "application/vnd.cpc.shipment-v8+xml",
+          "Accept": "application/vnd.cpc.shipment-v8+xml"
+          // If you later support PlatformId, you can also send a "Platform-id" header here.
+        },
+        body: xmlBody
+      });
+
+      const responseText = await response.text();
+      console.log("Canada Post CreateShipment response:", response.status, responseText);
+
+      if (!response.ok) {
+        alert("Error creating shipment. See console for full response.");
+        return;
+      }
+
+      alert("Shipment created successfully (response logged in console).");
+      // Next step: parse responseText as XML and surface label URLs, price links, etc. in the UI.
+    } catch (err) {
+      console.error("CreateShipment fetch error:", err);
+      alert("Unexpected error calling the Canada Post API. See console for details.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("CreateShipmentCanada");
+    if (form) {
+      form.addEventListener("submit", cpCreateShipmentFromForm);
+    }
+  });
+</script>
+</body>
+</html>

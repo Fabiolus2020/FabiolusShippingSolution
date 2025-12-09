@@ -1,0 +1,70 @@
+{
+  "userProfile": {
+    "company": "sdsdsd",
+    "name": "sdsdsd",
+    "phone": "wddww",
+    "email": "wdwdwd",
+    "address1": "1111111111",
+    "address2": "111111111111",
+    "city": "11111111111",
+    "province": "ON",
+    "postalCode": "111111",
+    "country": "Canada",
+    "paymentMethod": "account"
+  },
+  "shippingProfile": {
+    "apiUser": "6e93d53968881714",
+    "apiPassword": "0bfa9fcb9853d1f51ee57a",
+    "accountNumber": "2004381",
+    "contractNumber": "42708517",
+    "promoCode": "1111111111",
+    "emailOnShipment": true,
+    "emailOnException": true,
+    "emailOnDelivery": true,
+    "outputFormat": "8.5x11",
+    "encoding": "PDF",
+    "pickupPreference": "no",
+    "postOfficeId": "11111111",
+    "responsiblePayee": "2004381",
+    "providePricingInfo": true,
+    "provideReceiptInfo": true,
+    "includeInManifest": "yes",
+    "continuousInboundFreight": "true",
+    "manifestGroupId": "MyShipments"
+  },
+  "canadaSettings": {
+    "serviceType": "DOM.RP",
+    "weightKg": "1111111",
+    "lengthCm": "111",
+    "widthCm": "111",
+    "heightCm": "111",
+    "unpackaged": "true",
+    "mailingTube": "true",
+    "oversized": "true",
+    "packingInstructions": "true"
+  },
+  "usaSettings": {
+    "serviceTypeUSA": "USA.EP",
+    "weightKg": "11",
+    "lengthCm": "11",
+    "widthCm": "11",
+    "heightCm": "11",
+    "showPostageRate": "true",
+    "showInsuredValue": "true",
+    "unpackaged": "true",
+    "mailingTube": "true",
+    "oversized": "true"
+  },
+  "internationalSettings": {
+    "serviceTypeIntl": "INT.IP.SURF",
+    "weightKg": "1111",
+    "lengthCm": "111",
+    "widthCm": "111",
+    "heightCm": "111",
+    "showPostageRate": "true",
+    "showInsuredValue": "true",
+    "unpackaged": "true",
+    "mailingTube": "true",
+    "oversized": "true"
+  }
+}

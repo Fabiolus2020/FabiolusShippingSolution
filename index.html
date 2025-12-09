@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>Fabien Clermont Web Service Recovery/Testing Tools</title>
+<title>Fabien Clermont Web Service Recovery/Testing Tool</title>
 <!-- Existing stylesheet, if you still use it -->
 <link href="main.css" rel="stylesheet" type="text/css"/>
 <style>
@@ -577,6 +577,88 @@
 
 
 
+
+
+/* Donation modal */
+.donation-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.donation-modal-overlay.active {
+    display: flex;
+}
+
+.donation-modal {
+    max-width: 440px;
+    width: 92%;
+    background: radial-gradient(circle at top left, #1e293b, #020617);
+    border-radius: 18px;
+    padding: 22px 22px 18px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.donation-title {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+    color: #e5e7eb;
+}
+
+.donation-text {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+.donation-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.donation-btn {
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.donation-btn-primary {
+    background: linear-gradient(135deg, #0ea5e9, #22c1c3);
+    border-color: rgba(56, 189, 248, 0.9);
+    color: #020617;
+    box-shadow: 0 10px 30px rgba(8, 47, 73, 0.8);
+}
+
+.donation-btn-primary:hover {
+    box-shadow: 0 14px 40px rgba(8, 47, 73, 1);
+    transform: translateY(-1px);
+}
+
+.donation-btn-ghost {
+    background: transparent;
+    border-color: rgba(148, 163, 184, 0.6);
+    color: #9ca3af;
+}
+
+.donation-btn-ghost:hover {
+    background: rgba(148, 163, 184, 0.15);
+}
 
 </style>
 <script>
@@ -1245,6 +1327,66 @@ function updateTooltipWidths() {
 window.addEventListener('load', updateTooltipWidths);
 window.addEventListener('resize', updateTooltipWidths);
 
+
+
+// Donation modal logic
+const DONATION_PROMPT_INTERVAL_DAYS = 30;
+const DONATION_STORAGE_KEY = "donationPromptLastShown";
+
+function shouldShowDonationModal() {
+    try {
+        const last = localStorage.getItem(DONATION_STORAGE_KEY);
+        if (!last) return true;
+        const lastTime = parseInt(last, 10);
+        if (Number.isNaN(lastTime)) return true;
+        const now = Date.now();
+        const diffDays = (now - lastTime) / (1000 * 60 * 60 * 24);
+        return diffDays >= DONATION_PROMPT_INTERVAL_DAYS;
+    } catch (e) {
+        return true;
+    }
+}
+
+function openDonationModal() {
+    const overlay = document.getElementById("donationModalOverlay");
+    if (!overlay) return;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+}
+
+function closeDonationModal() {
+    const overlay = document.getElementById("donationModalOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    try {
+        localStorage.setItem(DONATION_STORAGE_KEY, String(Date.now()));
+    } catch (e) {
+        // ignore
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const remindLaterBtn = document.getElementById("donationRemindLaterBtn");
+    if (remindLaterBtn) {
+        remindLaterBtn.addEventListener("click", function () {
+            closeDonationModal();
+        });
+    }
+
+    const overlay = document.getElementById("donationModalOverlay");
+    if (overlay) {
+        overlay.addEventListener("click", function (e) {
+            if (e.target === overlay) {
+                closeDonationModal();
+            }
+        });
+    }
+
+    if (shouldShowDonationModal()) {
+        setTimeout(openDonationModal, 1500);
+    }
+});
 
 </script>
 </head>
@@ -2334,5 +2476,32 @@ window.addEventListener('resize', updateTooltipWidths);
 </div>
 </main>
 </div>
+
+<!-- Donation modal -->
+<div id="donationModalOverlay" class="donation-modal-overlay" aria-hidden="true">
+  <div class="donation-modal">
+    <h2 class="donation-title">Support this tool each month ☕</h2>
+    <p class="donation-text">
+      I built and maintain this tool in my spare time. If it saves you time or money,
+      please consider making a monthly contribution. Any amount helps keep it online
+      and improving.
+    </p>
+    <p class="donation-text">
+      You can choose the amount you want – just click the button below.
+    </p>
+    <div class="donation-actions">
+      <a id="supportButton" href="https://buymeacoffee.com/fabiolus" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;padding:8px 14px;border-radius:6px;border:1px solid #c98b00;
+              background:#ffd24d;color:#000;font-weight:bold;text-decoration:none;">
+      ☕ Buy me a coffee
+    </a>
+      <button type="button" id="donationRemindLaterBtn"
+              class="donation-btn donation-btn-ghost">
+        Remind me next month
+      </button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
